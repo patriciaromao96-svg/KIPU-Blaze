@@ -668,7 +668,15 @@ Roster
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+import { 
+  getFirestore,
+  collection,
+  addDoc,
+  deleteDoc,
+  doc,
+  updateDoc,
+  onSnapshot
+} from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAv6FpltyJQAtC04tssKr600wJEId7gFQE",
@@ -684,13 +692,48 @@ const db = getFirestore(app);
 
 console.log("Firebase connected");
 
-let matches = JSON.parse(localStorage.getItem("matches")) || [];
-matches.forEach(m => {
-if (!m.id) {
-m.id = Date.now() + Math.random();
-}
+let matches = [];
+
+function listenMatches(){
+
+onSnapshot(collection(db,"matches"), snapshot => {
+
+matches = [];
+
+snapshot.forEach(docSnap=>{
+matches.push({
+id: docSnap.id,
+...docSnap.data()
 });
-let players = JSON.parse(localStorage.getItem("players")) || [];
+});
+
+refreshUI();
+
+});
+
+}
+
+let players = [];
+
+function listenPlayers(){
+
+onSnapshot(collection(db,"players"), snapshot => {
+
+players = [];
+
+snapshot.forEach(docSnap=>{
+players.push({
+id: docSnap.id,
+...docSnap.data()
+});
+});
+
+refreshUI();
+
+});
+
+}
+
 const AGENTS = [
 "Jett","Raze","Phoenix","Reyna","Yoru","Neon","Iso","Waylay",
 "Sova","Fade","Skye","Gekko","Breach","KAY/O","Tejo",
@@ -736,7 +779,6 @@ compSelect.appendChild(option2);
 const matchTable = document.getElementById("matchTable");
 const rosterTable = document.getElementById("rosterTable");
 
-const editMatchTable = document.getElementById("editMatchTable");
 const editPlayerTable = document.getElementById("editPlayerTable");
 
 const winsSpan = document.getElementById("wins");
@@ -762,12 +804,6 @@ renderMapStats();
 }
 
 
-function saveData(){
-
-localStorage.setItem("matches",JSON.stringify(matches));
-localStorage.setItem("players",JSON.stringify(players));
-
-}
 
 function formatDate(date){
 
@@ -1049,7 +1085,7 @@ editMatchTable.innerHTML+=`
 onclick="editMatch('${m.id}')">✏️</button>
 
 <button class="editBtn deleteBtn"
-onclick="deleteMatch(${m.id})">✖</button>
+onclick="deleteMatch('${m.id}')">✖</button>
 
 </td>
 </tr>
@@ -1150,30 +1186,21 @@ editingPlayerIndex = index;
 
 }
 
-function deleteMatch(id){
+async function deleteMatch(id){
 
-const matchIndex = matches.findIndex(m => m.id == id);
+await deleteDoc(doc(db,"matches",id));
 
-if(matchIndex === -1) return;
-
-matches.splice(matchIndex,1);
-
-saveData();
-refreshUI();
-
-/* close form */
 cancelMatchForm();
 
 }
 
-function deletePlayer(index){
+async function deletePlayer(index){
 
-players.splice(index,1);
+const player = players[index];
 
-saveData();
-refreshUI();
+await deleteDoc(doc(db,"players",player.id));
 
-/* close form */
+
 cancelPlayerForm();
 
 }
@@ -1222,7 +1249,7 @@ deleteBtn.classList.add("hidden");
 
 }
 
-function savePlayerRow(index){
+async function savePlayerRow(index){
 
 const name = document.getElementById(`name-${index}`).innerText;
 const role = document.getElementById(`role-${index}`).innerText;
@@ -1232,11 +1259,14 @@ const agentSelect = document.getElementById(`agentEdit-${index}`);
 const agents =
 Array.from(agentSelect.selectedOptions).map(o=>o.value);
 
-players[index] = {
+const player = players[index];
+
+await updateDoc(doc(db,"players",player.id),{
 name:name,
 role:role,
 agent:agents
-};
+});
+
 
 const editBtn = document.getElementById(`playerEdit-${index}`);
 
@@ -1244,7 +1274,6 @@ editBtn.innerHTML = "✏️";
 editBtn.classList.remove("saveBtn");
 editBtn.onclick = () => enablePlayerEdit(index);
 
-saveData();
 refreshUI();
 
 /* keep buttons visible while editing */
@@ -1309,7 +1338,7 @@ maxItems:5
 
 }
 
-function saveMatchRow(id){
+async function saveMatchRow(id){
 
 const index = matches.findIndex(m => m.id == id);
 
@@ -1327,14 +1356,14 @@ const compSelect = document.getElementById(`compEdit-${id}`);
 const comp =
 Array.from(compSelect.selectedOptions).map(o=>o.value);
 
-matches[index] = {
-...matches[index],
+await updateDoc(doc(db,"matches",id),{
 team:team,
 map:map,
 score:score,
 date:date,
 comp:comp
-};
+});
+
 
 const editBtn = document.getElementById(`matchEdit-${id}`);
 
@@ -1342,7 +1371,6 @@ editBtn.innerHTML = "✏️";
 editBtn.classList.remove("saveBtn");
 editBtn.onclick = () => enableMatchEdit(id);
 
-saveData();
 refreshUI();
 
 /* close form and hide buttons */
@@ -1467,7 +1495,7 @@ document.getElementById("matchEditSection").classList.add("hidden");
 document.getElementById("matchSaveBtn").classList.add("hidden");
 }
 
-document.getElementById("matchForm").addEventListener("submit",e=>{
+document.getElementById("matchForm").addEventListener("submit",async e=>{
 
 e.preventDefault();
 
@@ -1479,20 +1507,9 @@ Array.from(document.getElementById("comp").selectedOptions)
 
 if(editingMatchIndex !== null){
 
-matches[editingMatchIndex] = {
-team:team.value,
-map:map.value,
-comp:compSelected,
-score:score.value,
-date:convertedDate
-};
+const id = matches[editingMatchIndex].id;
 
-editingMatchIndex = null;
-
-}else{
-
-matches.push({
-id: Date.now(),
+await updateDoc(doc(db,"matches",id),{
 team:team.value,
 map:map.value,
 comp:compSelected,
@@ -1500,10 +1517,22 @@ score:score.value,
 date:convertedDate
 });
 
+
+editingMatchIndex = null;
+
+}else{
+
+await addDoc(collection(db,"matches"),{
+team:team.value,
+map:map.value,
+comp:compSelected,
+score:score.value,
+date:convertedDate
+});
+
+
 }
 
-saveData();
-refreshUI();
 
 cancelMatchForm();
 
@@ -1514,7 +1543,7 @@ e.target.reset();
 });
 
 
-document.getElementById("playerForm").addEventListener("submit",e=>{
+document.getElementById("playerForm").addEventListener("submit",async e=>{
 
 e.preventDefault();
 
@@ -1524,17 +1553,20 @@ Array.from(document.getElementById("agent").selectedOptions)
 
 if(editingPlayerIndex !== null){
 
-players[editingPlayerIndex] = {
+const id = players[editingPlayerIndex].id;
+
+await updateDoc(doc(db,"players",id),{
 name:playerName.value,
 role:role.value,
 agent:selectedAgents
-};
+});
+
 
 editingPlayerIndex = null;
 
 }else{
 
-players.push({
+await addDoc(collection(db,"players"),{
 name:playerName.value,
 role:role.value,
 agent:selectedAgents
@@ -1542,8 +1574,6 @@ agent:selectedAgents
 
 }
 
-saveData();
-refreshUI();
 
 cancelPlayerForm();   // CLOSE FORM AFTER ADDING
 
@@ -1558,8 +1588,8 @@ renderMatches();
 
 populateAgentSelectors();
 
-updateTeamFilter();   // build the filter first
-refreshUI();          // then render everything
+listenMatches();
+listenPlayers();
 
 new TomSelect("#agent",{
 plugins:['remove_button'],
@@ -1591,7 +1621,6 @@ if(compSelect.tomselect){
 compSelect.tomselect.clear();
 }
 
-editingMatchIndex = null;
 
 /* THIS FIXES YOUR BUG */
 renderMatches();
