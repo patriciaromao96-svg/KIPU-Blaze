@@ -675,7 +675,9 @@ import {
   deleteDoc,
   doc,
   updateDoc,
-  onSnapshot
+  onSnapshot,
+  query,
+  orderBy
 } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -717,7 +719,9 @@ let players = [];
 
 function listenPlayers(){
 
-onSnapshot(collection(db,"players"), snapshot => {
+onSnapshot(
+  query(collection(db,"players"), orderBy("order")),
+  snapshot => {
 
 players = [];
 
