@@ -151,8 +151,10 @@ tr:hover{
 background:#262626;
 }
 
-#rosterTable tr{
+.dragHandle{
 cursor:grab;
+font-size:18px;
+opacity:0.6;
 user-select:none;
 }
 
@@ -567,6 +569,7 @@ Roster
 <table>
 <thead>
 <tr>
+<th></th>
 <th>Name</th>
 <th>Role</th>
 <th>Agents</th>
@@ -1043,6 +1046,7 @@ players.forEach((p,i)=>{
 
 rosterTable.innerHTML+=`
 <tr data-id="${p.id}">
+<td class="dragHandle">☰</td>
 <td contenteditable="false" id="name-${i}">${p.name}</td>
 <td contenteditable="false" id="role-${i}">${p.role}</td>
 <td id="agents-${i}">
@@ -1729,8 +1733,7 @@ function enableRosterDrag(){
 
 new Sortable(rosterTable,{
 animation:150,
-filter: ".editBtn",
-preventOnFilter: false,
+handle: ".dragHandle",
 
 onEnd: async function(){
 
