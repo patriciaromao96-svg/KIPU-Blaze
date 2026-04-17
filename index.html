@@ -801,6 +801,7 @@ const totalMatches = document.getElementById("totalMatches");
 
 let editingMatchIndex = null;
 let editingPlayerIndex = null;
+let rosterEditMode = false;
 
 /* pagination */
 let currentPage = 1;
@@ -1057,11 +1058,11 @@ ${p.agent ? p.agent.map(a =>
 
 <td>
 
-<button class="editBtn hidden"
+<button class="editBtn ${rosterEditMode ? "" : "hidden"}"
 id="playerEdit-${i}"
 onclick="enablePlayerEdit(${i})">✏️</button>
 
-<button class="editBtn deleteBtn hidden"
+<button class="editBtn deleteBtn ${rosterEditMode ? "" : "hidden"}"
 onclick="deletePlayer(${i})">✖</button>
 
 </td>
@@ -1436,19 +1437,17 @@ editBtn.onclick = () => savePlayerRow(index);
 
 window.openPlayerForm = function(){
 
+rosterEditMode = true;
+
 document.getElementById("playerFormSection").classList.remove("hidden");
 
-/* show edit buttons */
-document.querySelectorAll("#rosterTable .editBtn")
-.forEach(btn=>{
-btn.classList.remove("hidden");
-});
-
-}
+renderPlayers();
 
 }
 
 window.cancelPlayerForm = function(){
+
+  rosterEditMode = false;
 
 document.getElementById("playerFormSection").classList.add("hidden");
 document.getElementById("playerEditSection").classList.add("hidden");
