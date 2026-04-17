@@ -808,10 +808,10 @@ let currentPage = 1;
 const rowsPerPage = 25;
 function refreshUI(){
 
+updateTeamFilter();
 renderMatches();
 renderPlayers();
 updateStats();
-updateTeamFilter();
 renderMapStats();
 
 }
