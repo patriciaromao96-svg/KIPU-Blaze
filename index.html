@@ -1573,7 +1573,8 @@ editingPlayerIndex = null;
 await addDoc(collection(db,"players"),{
 name:playerName.value,
 role:role.value,
-agent:selectedAgents
+agent:selectedAgents,
+order: players.length + 1
 });
 
 }
