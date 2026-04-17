@@ -1438,15 +1438,13 @@ window.openPlayerForm = function(){
 
 document.getElementById("playerFormSection").classList.remove("hidden");
 
-/* disable drag while editing */
-rosterSortable.option("disabled", true);
-
 /* show edit buttons */
-
 document.querySelectorAll("#rosterTable .editBtn")
 .forEach(btn=>{
 btn.classList.remove("hidden");
 });
+
+}
 
 }
 
