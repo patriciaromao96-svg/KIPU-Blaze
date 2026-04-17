@@ -1420,7 +1420,7 @@ editBtn.onclick = () => savePlayerRow(index);
 
 }
 
-function openPlayerForm(){
+window.openPlayerForm = function(){
 
 document.getElementById("playerFormSection").classList.remove("hidden");
 
@@ -1433,7 +1433,7 @@ btn.classList.remove("hidden");
 
 }
 
-function cancelPlayerForm(){
+window.cancelPlayerForm = function(){
 
 document.getElementById("playerFormSection").classList.add("hidden");
 document.getElementById("playerEditSection").classList.add("hidden");
@@ -1468,7 +1468,7 @@ document.getElementById("playerFormSection").classList.add("hidden");
 document.getElementById("playerEditSection").classList.add("hidden");
 }
 
-function openMatchForm(){
+window.openMatchForm = function(){
 
 document.getElementById("matchFormSection").classList.remove("hidden");
 
@@ -1602,7 +1602,7 @@ plugins:['remove_button'],
 maxItems:5
 });
 
-function cancelMatchForm(){
+window.cancelMatchForm = function(){
 
 document.getElementById("addMatchBtn").disabled = false;
 
