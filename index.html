@@ -1200,7 +1200,7 @@ editingPlayerIndex = index;
 
 }
 
-async function deleteMatch(id){
+window.deleteMatch = async function(id){
 
 await deleteDoc(doc(db,"matches",id));
 
@@ -1299,7 +1299,7 @@ cancelPlayerForm();
 
 }
 
-function enableMatchEdit(id){
+window.enableMatchEdit = function(id){
 
 const index = matches.findIndex(m => m.id == id);
 
