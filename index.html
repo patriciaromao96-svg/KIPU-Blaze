@@ -847,13 +847,19 @@ return team > enemy;
 
 function updateStats(){
 
+const filter = document.getElementById("teamFilter").value || "all";
+
+const filtered = filter === "all"
+? matches
+: matches.filter(m => m.team === filter);
+
 let wins = 0;
 
-matches.forEach(m=>{
+filtered.forEach(m=>{
 if(isWin(m.score)) wins++;
 });
 
-const total = matches.length;
+const total = filtered.length;
 const losses = total - wins;
 const winrate = total ? ((wins/total)*100).toFixed(1) : 0;
 
@@ -883,7 +889,13 @@ mapStats[map] = {wins:0,total:0};
 });
 
 /* collect stats */
-matches.forEach(m=>{
+const filter = document.getElementById("teamFilter").value || "all";
+
+const filtered = filter === "all"
+? matches
+: matches.filter(m => m.team === filter);
+
+filtered.forEach(m=>{
 
 if(!mapStats[m.map]){
 mapStats[m.map] = {wins:0,total:0};
