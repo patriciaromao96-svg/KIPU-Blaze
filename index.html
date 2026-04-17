@@ -1208,7 +1208,7 @@ cancelMatchForm();
 
 }
 
-async function deletePlayer(index){
+window.deletePlayer = async function(index){
 
 const player = players[index];
 
@@ -1263,7 +1263,7 @@ deleteBtn.classList.add("hidden");
 
 }
 
-async function savePlayerRow(index){
+window.savePlayerRow = async function(index){
 
 const name = document.getElementById(`name-${index}`).innerText;
 const role = document.getElementById(`role-${index}`).innerText;
@@ -1392,7 +1392,7 @@ cancelMatchForm();
 
 }
 
-function enablePlayerEdit(index){
+window.enablePlayerEdit = function(index){
 
 const nameCell = document.getElementById(`name-${index}`);
 const roleCell = document.getElementById(`role-${index}`);
@@ -1437,6 +1437,9 @@ editBtn.onclick = () => savePlayerRow(index);
 window.openPlayerForm = function(){
 
 document.getElementById("playerFormSection").classList.remove("hidden");
+
+/* disable drag while editing */
+rosterSortable.option("disabled", true);
 
 /* show edit buttons */
 
