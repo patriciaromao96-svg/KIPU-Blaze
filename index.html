@@ -6,6 +6,7 @@
 
 <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
 <style>
 
@@ -720,8 +721,8 @@ let players = [];
 function listenPlayers(){
 
 onSnapshot(
-  query(collection(db,"players"), orderBy("order")),
-  snapshot => {
+query(collection(db,"players"), orderBy("order")),
+snapshot => {
 
 players = [];
 
@@ -1036,7 +1037,7 @@ rosterTable.innerHTML="";
 players.forEach((p,i)=>{
 
 rosterTable.innerHTML+=`
-<tr>
+<tr data-id="${p.id}">
 <td contenteditable="false" id="name-${i}">${p.name}</td>
 <td contenteditable="false" id="role-${i}">${p.role}</td>
 <td id="agents-${i}">
@@ -1570,11 +1571,15 @@ editingPlayerIndex = null;
 
 }else{
 
+const maxOrder = players.length
+  ? Math.max(...players.map(p => p.order || 0))
+  : 0;
+
 await addDoc(collection(db,"players"),{
 name:playerName.value,
 role:role.value,
 agent:selectedAgents,
-order: players.length + 1
+order: maxOrder + 1
 });
 
 }
@@ -1595,6 +1600,7 @@ populateAgentSelectors();
 
 listenMatches();
 listenPlayers();
+enableRosterDrag();
 
 document.getElementById("addMatchBtn").addEventListener("click", openMatchForm);
 document.getElementById("addPlayerBtn").addEventListener("click", openPlayerForm);
@@ -1711,6 +1717,31 @@ window.scrollTo({ top: 0, behavior: "smooth" });
 };
 
 container.appendChild(next);
+
+}
+
+function enableRosterDrag(){
+
+new Sortable(rosterTable,{
+animation:150,
+
+onEnd: async function(){
+
+const rows = [...rosterTable.querySelectorAll("tr")];
+
+rows.forEach(async (row,index)=>{
+
+const id = row.dataset.id;
+
+await updateDoc(doc(db,"players",id),{
+order:index + 1
+});
+
+});
+
+}
+
+});
 
 }
 
