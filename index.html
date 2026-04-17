@@ -1729,6 +1729,8 @@ function enableRosterDrag(){
 
 new Sortable(rosterTable,{
 animation:150,
+filter: ".editBtn",
+preventOnFilter: false,
 
 onEnd: async function(){
 
