@@ -966,15 +966,25 @@ function updateTeamFilter(){
 
 const filter = document.getElementById("teamFilter");
 
+/* save current selected team */
+const currentTeam = filter.value;
+
+/* build list of teams */
 const teams = [...new Set(matches.map(m=>m.team))];
 
+/* rebuild dropdown */
 filter.innerHTML = `<option value="all">All Teams</option>`;
 
 teams.forEach(team=>{
 filter.innerHTML += `<option value="${team}">${team}</option>`;
 });
 
+/* restore previous selection */
+if(currentTeam && teams.includes(currentTeam)){
+filter.value = currentTeam;
+}else{
 filter.value = "all";
+}
 
 }
 
