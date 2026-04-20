@@ -1135,27 +1135,30 @@ maps
 matchTable.innerHTML += `
 <tr data-id="${m.id}">
 <td class="matchDrag ${matchEditMode ? '' : 'hidden'}">☰</td>
-<td></td>
-<td></td>
 
-<td>${m.map}</td>
+<td id="date-${m.id}">${formatDate(m.date)}</td>
 
-<td>
+<td id="team-${m.id}">${m.team}</td>
+
+<td id="map-${m.id}">${m.map}</td>
+
+<td id="comp-${m.id}">
 ${m.comp ? m.comp.map(a =>
 `<img class="agentIcon" src="images/agents/${a.toLowerCase().replace("/", "").replace(" ", "")}.png">`
 ).join("") : ""}
 </td>
 
-<td style="color:${isWin(m.score) ? '#4caf50' : '#ff4d4d'}; font-weight:bold;">
+<td id="score-${m.id}" style="color:${isWin(m.score) ? '#4caf50' : '#ff4d4d'}; font-weight:bold;">
 ${m.score}
 </td>
 
 <td>
-<button type="button"
+<button
+id="matchEdit-${m.id}"
 class="editBtn ${matchEditMode ? '' : 'hidden'}"
 onclick="enableMatchEdit('${m.id}')">✏️</button>
 
-<button type="button"
+<button
 class="editBtn deleteBtn ${matchEditMode ? '' : 'hidden'}"
 onclick="deleteMatch('${m.id}')">✖</button>
 </td>
