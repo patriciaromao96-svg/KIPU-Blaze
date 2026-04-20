@@ -1624,16 +1624,15 @@ document.getElementById("playerFormSection").classList.add("hidden");
 document.getElementById("playerEditSection").classList.add("hidden");
 }
 
-window.openMatchForm = function(skipRender = false){
+window.openMatchForm = function(){
 
 matchEditMode = true;
 
 document.getElementById("matchFormSection").classList.remove("hidden");
 document.getElementById("addMatchBtn").disabled = true;
 
-if(!skipRender){
+/* refresh table so buttons appear */
 renderMatches();
-}
 
 }
 
