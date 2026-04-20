@@ -1584,13 +1584,21 @@ const sameSeries = matches.filter(m =>
 m.date === convertedDate && m.team === team.value
 );
 
+/* shift existing maps down */
+for(const m of sameSeries){
+await updateDoc(doc(db,"matches",m.id),{
+order:(m.order || 0) + 1
+});
+}
+
+/* new map becomes first */
 await addDoc(collection(db,"matches"),{
 team:team.value,
 map:map.value,
 comp:compSelected,
 score:score.value,
 date:convertedDate,
-order: sameSeries.length + 1
+order:1
 });
 
 
