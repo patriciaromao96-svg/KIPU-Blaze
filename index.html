@@ -1774,7 +1774,7 @@ onEnd: async function(){
 
 const rows = [...matchTable.querySelectorAll("tr[data-id]")];
 
-rows.forEach(async (row,index)=>{
+for(const [index,row] of rows.entries()){
 
 const id = row.dataset.id;
 
@@ -1782,7 +1782,18 @@ await updateDoc(doc(db,"matches",id),{
 order:index + 1
 });
 
-});
+}
+
+/* KEEP EDIT MODE ACTIVE */
+matchEditMode = true;
+
+/* SHOW EDIT BUTTONS AGAIN */
+document.querySelectorAll("#matchTable .editBtn")
+.forEach(btn => btn.classList.remove("hidden"));
+
+/* SHOW DRAG HANDLES AGAIN */
+document.querySelectorAll("#matchTable .matchDrag")
+.forEach(el => el.classList.remove("hidden"));
 
 }
 
