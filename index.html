@@ -1066,10 +1066,10 @@ function renderMatches(){
 
 const filter = document.getElementById("teamFilter").value || "all";
 
-matchTable.innerHTML = "";
+let html = "";
 
 /* sort matches by date, team, map */
-const sorted = [...matches];
+const sorted = matches;
 
 /* apply team filter */
 const filtered = filter==="all"
@@ -1093,7 +1093,7 @@ dateGroups[m.date][m.team].push(m);
 Object.entries(dateGroups).forEach(([date,teams])=>{
 
 /* DATE ROW */
-matchTable.innerHTML += `
+html += `
 <tr style="background:#191919;font-weight:bold;">
 <td>${formatDate(date)}</td>
 <td colspan="5"></td>
@@ -1106,7 +1106,7 @@ Object.entries(teams).forEach(([team,maps])=>{
 const key = `${date}-${team}`;
 const collapsed = collapsedMatches[key];
 
-matchTable.innerHTML += `
+html += `
 <tr style="background:#1c1c1c;font-weight:600;">
 
 <td></td>
@@ -1132,7 +1132,7 @@ maps
 .sort((a,b)=>(a.order || 0)-(b.order || 0))
 .forEach(m=>{
 
-matchTable.innerHTML += `
+html += `
 <tr data-id="${m.id}">
 <td class="matchDrag ${matchEditMode ? '' : 'hidden'}">☰</td>
 <td></td>
@@ -1169,6 +1169,8 @@ onclick="deleteMatch('${m.id}')">✖</button>
 });
 
 });
+
+matchTable.innerHTML = html;
 
 }
 
@@ -1819,6 +1821,7 @@ maxItems:5
 window.cancelMatchForm = function(){
 
 matchEditMode = false;
+editingMatchIndex = null;
 
 document.getElementById("addMatchBtn").disabled = false;
 
