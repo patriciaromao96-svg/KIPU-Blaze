@@ -1297,7 +1297,7 @@ renderEditMatches();
 
 window.editMatch = function(id){
 
-openMatchForm();
+openMatchForm(true);
 document.getElementById("matchFormSection")
 .scrollIntoView({behavior:"smooth",block:"start"});
 
@@ -1622,18 +1622,16 @@ document.getElementById("playerFormSection").classList.add("hidden");
 document.getElementById("playerEditSection").classList.add("hidden");
 }
 
-window.openMatchForm = function(){
+window.openMatchForm = function(skipRender = false){
 
 matchEditMode = true;
 
-/* show form */
 document.getElementById("matchFormSection").classList.remove("hidden");
-
-/* disable + button */
 document.getElementById("addMatchBtn").disabled = true;
 
-/* IMPORTANT: re-render table so edit/delete/drag appear */
+if(!skipRender){
 renderMatches();
+}
 
 }
 
