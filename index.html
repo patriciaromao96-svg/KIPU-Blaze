@@ -1142,32 +1142,10 @@ maps
 html += `
 <tr data-id="${m.id}">
 <td class="matchDrag ${matchEditMode ? '' : 'hidden'}">☰</td>
-
-<td></td>      <!-- Date column -->
-<td></td>      <!-- Team column -->
+<td></td>
+<td></td>
 
 <td>${m.map}</td>
-
-<td>
-${m.comp ? m.comp.map(a =>
-`<img class="agentIcon" src="images/agents/${a.toLowerCase().replace("/", "").replace(" ", "")}.png">`
-).join("") : ""}
-</td>
-
-<td style="color:${isWin(m.score) ? '#4caf50' : '#ff4d4d'}; font-weight:bold;">
-${m.score}
-</td>
-
-<td>
-<button type="button"
-class="editBtn ${matchEditMode ? '' : 'hidden'}"
-onclick="editMatch('${m.id}')">✏️</button>
-
-<button type="button"
-class="editBtn deleteBtn ${matchEditMode ? '' : 'hidden'}"
-onclick="deleteMatch('${m.id}')">✖</button>
-</td>
-</tr>
 
 <td>
 ${m.comp ? m.comp.map(a =>
