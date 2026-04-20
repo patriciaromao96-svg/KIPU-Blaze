@@ -710,7 +710,8 @@ function listenMatches(){
 onSnapshot(
 query(
 collection(db,"matches"),
-orderBy("date","desc")
+orderBy("date","desc"),
+orderBy("order","asc")
 ),
 snapshot => {
 
