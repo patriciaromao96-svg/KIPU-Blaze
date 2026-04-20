@@ -1,0 +1,1961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head> 
+<meta charset="UTF-8">
+<title>Blaze Team Tracker</title>
+
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+<style>
+
+body{
+font-family:'Segoe UI',Arial;
+margin:0;
+background:linear-gradient(135deg,#121212,#1a1a1a);
+color:#e5e5e5;
+}
+
+header{
+background:#181818;
+padding:20px;
+text-align:center;
+border-bottom:2px solid #ff7a00;
+}
+
+h1{
+margin:0;
+color:#ff7a00;
+}
+
+.tabs{
+display:flex;
+justify-content:center;
+background:#181818;
+border-bottom:1px solid #2a2a2a;
+}
+
+.tab{
+padding:15px 30px;
+cursor:pointer;
+color:#888;
+transition:0.2s;
+}
+
+.tab:hover{
+color:#e5e5e5;
+}
+
+.tab.active{
+color:#ff7a00;
+border-bottom:2px solid #ff7a00;
+}
+
+.container{
+padding:20px;
+}
+
+.hidden{
+display:none !important;
+}
+
+.grid{
+display:grid;
+grid-template-columns:2fr 1fr;
+gap:20px;
+align-items:start;
+}
+
+.card{
+background:#1e1e1e;
+border:1px solid #2a2a2a;
+border-radius:16px;
+padding:20px;
+box-shadow:0 0 15px rgba(0,0,0,0.6);
+}
+
+.card:hover{
+box-shadow:0 0 20px rgba(255,122,0,0.15);
+}
+
+h2{
+color:#ff7a00;
+margin-bottom:10px;
+}
+
+input,select,.ts-control{
+width:100%;
+max-width:100%;
+box-sizing:border-box;
+margin:5px 0;
+padding:6px 10px;
+border-radius:8px;
+border:1px solid #333;
+background:#111;
+color:white;
+}
+
+.ts-wrapper{
+width:100%;
+}
+
+form input,
+form .ts-wrapper{
+margin-bottom:10px;
+}
+
+input:focus{
+border-color:#ff7a00;
+outline:none;
+box-shadow:0 0 5px rgba(255,122,0,0.4);
+}
+
+button{
+width:100%;
+margin-top:10px;
+padding:10px;
+border-radius:8px;
+border:none;
+background:linear-gradient(90deg,#ff7a00,#ff9a3c);
+color:white;
+font-weight:bold;
+cursor:pointer;
+transition:0.2s;
+}
+
+button:hover{
+transform:scale(1.03);
+box-shadow:0 0 10px rgba(255,122,0,0.4);
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:10px;
+}
+
+th{
+text-align:left;
+padding:10px;
+color:#888;
+border-bottom:1px solid #2a2a2a;
+}
+
+td{
+padding:8px 10px;
+border-bottom:1px solid #2a2a2a;
+vertical-align:middle;
+}
+
+tr:hover{
+background:#262626;
+}
+
+.dragHandle{
+cursor:grab;
+font-size:18px;
+opacity:0.6;
+user-select:none;
+}
+
+@media(max-width:800px){
+.grid{grid-template-columns:1fr}
+}
+
+.agent{
+background:#2a2a2a;
+padding:4px 8px;
+border-radius:6px;
+margin-right:4px;
+font-size:12px;
+}
+
+.addBtn{
+width:36px;
+height:36px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+background:linear-gradient(90deg,#ff7a00,#ff9a3c);
+color:white;
+font-weight:bold;
+border:none;
+cursor:pointer;
+}
+
+.addBtn:hover{
+box-shadow:0 0 10px rgba(255,122,0,0.4);
+transform:scale(1.05);
+}
+
+.formBtn{
+padding:8px 16px;
+border-radius:8px;
+background:linear-gradient(90deg,#ff7a00,#ff9a3c);
+color:white;
+border:none;
+cursor:pointer;
+font-weight:bold;
+width:auto;
+}
+
+.formBtn:hover{
+box-shadow:0 0 10px rgba(255,122,0,0.4);
+}
+
+.editBtn{
+width:36px;
+height:36px;
+padding:0;
+font-size:14px;
+margin-top:0;
+border-radius:50%;
+display:inline-flex;
+align-items:center;
+justify-content:center;
+background:#3a3a3a;
+}
+
+.editBtn:hover{
+background:#4a4a4a;
+}
+
+.saveBtn{
+background:#2e7d32;
+color:white;
+}
+
+.saveBtn:hover{
+background:#3fa046;
+}
+
+.deleteBtn{
+background:#3a3a3a;
+color:#ff4d4d;
+}
+
+.deleteBtn:hover{
+background:#4a4a4a;
+color:#ff7070;
+}
+
+td:last-child{
+text-align:right;
+width:120px;
+white-space:nowrap;
+}
+
+h2{
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.scoreWin{
+color:#4caf50;
+font-weight:bold;
+}
+
+.scoreLoss{
+color:#ff4d4d;
+font-weight:bold;
+}
+
+.ts-control{
+background:#111 !important;
+border:1px solid #333 !important;
+color:white !important;
+border-radius:8px;
+padding:8px;
+}
+
+.ts-control input{
+color:white !important;
+}
+
+.ts-dropdown{
+background:#111 !important;
+color:white !important;
+border:1px solid #333 !important;
+}
+
+.rightColumn{
+display:flex;
+flex-direction:column;
+gap:20px;
+}
+
+.agentIcon{
+width:26px;
+height:26px;
+border-radius:6px;
+margin-right:4px;
+vertical-align:middle;
+}
+
+.statsGrid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:12px;
+margin-top:10px;
+}
+
+.statBox{
+background:#141414;
+padding:16px;
+border-radius:10px;
+border:1px solid #2a2a2a;
+}
+
+.statTitle{
+font-size:13px;
+color:#9aa4ad;
+margin-bottom:6px;
+}
+
+.statValue{
+font-size:22px;
+font-weight:bold;
+color:white;
+}
+
+.statBox:nth-child(2) .statValue{
+color:#4caf50;
+}
+
+.statBox:nth-child(3) .statValue{
+color:#ff4d4d;
+}
+
+.mapStatsTable td:first-child{
+text-align:center;
+font-weight:500;
+}
+
+.mapStatsTable{
+width:100%;
+margin-top:10px;
+border-collapse:collapse;
+}
+
+.mapStatsTable th{
+color:#9aa4ad;
+padding:10px;
+text-align:center;
+border-bottom:1px solid #2a2a2a;
+}
+
+.mapStatsTable td{
+padding:10px;
+border-bottom:1px solid #2a2a2a;
+text-align:center;
+}
+
+.mapStatsTable tr:hover{
+background:#262626;
+}
+
+.mapWinrate{
+color:white;
+font-weight:bold;
+}
+
+.mapWins{
+color:#4caf50;
+font-weight:bold;
+}
+
+.mapLosses{
+color:#ff4d4d;
+font-weight:bold;
+}
+
+.mapWinrateBar{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:8px;
+}
+
+.winBar{
+flex:1;
+height:8px;
+background:#2a2a2a;
+border-radius:6px;
+overflow:hidden;
+}
+
+.winBarFill{
+height:100%;
+background:#ff7a00;
+}
+
+.winPercent{
+min-width:48px;
+text-align:right;
+color:white;
+font-weight:bold;
+}
+
+.mainHeader{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:15px;
+background:#181818;
+padding:18px;
+border-bottom:2px solid #ff7a00;
+}
+
+.logoCircle{
+width:54px;
+height:54px;
+border-radius:50%;
+background:#0f0f0f;
+display:flex;
+align-items:center;
+justify-content:center;
+border:2px solid #ff7a00;
+overflow:hidden;
+}
+
+.logoImage{
+width:100%;
+height:100%;
+object-fit:cover;
+transform:scale(1.1);
+}
+
+.logoCircle{
+box-shadow:0 0 10px rgba(255,122,0,0.5);
+}
+
+.mapCell{
+position:relative;
+height:38px;
+background-size:cover;
+background-position:center;
+border-radius:8px;
+overflow:hidden;
+font-weight:600;
+}
+
+.mapUnused{
+opacity:0.35;
+filter:grayscale(60%);
+}
+
+.mapOverlay{
+position:absolute;
+inset:0;
+background:linear-gradient(90deg, rgba(0,0,0,0.75), rgba(0,0,0,0.2));
+display:flex;
+align-items:center;
+justify-content:center;
+color:white;
+font-weight:600;
+}
+
+.mapCell{
+transition:0.2s;
+}
+
+.mapCell:hover{
+transform:scale(1.02);
+}
+
+.dropdownBtn{
+width:20px;
+height:20px;
+display:inline-flex;
+align-items:center;
+justify-content:center;
+border:none;
+border-radius:4px;
+background:#ff7a00;
+color:white;
+font-size:11px;
+cursor:pointer;
+flex-shrink:0;
+margin-top:0;
+}
+
+.arrow{
+width:0;
+height:0;
+border-left:4px solid transparent;
+border-right:4px solid transparent;
+}
+
+.arrow.down{
+border-top:6px solid white;
+}
+
+.arrow.right{
+border-top:4px solid transparent;
+border-bottom:4px solid transparent;
+border-left:6px solid white;
+}
+
+.teamRow{
+display:flex;
+align-items:center;
+gap:10px;
+line-height:1;
+}
+
+#matchTable td{
+vertical-align:middle;
+}
+
+.dropdownBtn:hover{
+background:#ff8c1a;
+}
+
+.matchDrag{
+cursor:grab;
+font-size:18px;
+opacity:0.6;
+user-select:none;
+text-align:center;
+width:20px;
+}
+
+</style>
+</head>
+
+<body>
+
+<header class="mainHeader">
+
+<div class="logoCircle">
+<img src="images/logo.png" class="logoImage">
+</div>
+
+<h1>Blaze Team Tracker</h1>
+
+</header>
+
+
+<!-- HOME -->
+
+<div class="container">
+
+<div class="grid">
+
+<div class="card">
+<h2>
+Match History
+<div class="cardActions">
+<button id="addMatchBtn" class="addBtn">+</button>
+</div>
+</h2>
+
+<select id="teamFilter"></select>
+
+<div id="matchFormSection" class="hidden">
+
+<h3>Add Match</h3>
+
+<form id="matchForm">
+
+<input type="text" id="team" placeholder="Team" required>
+
+<select id="map" required>
+<option value="">Select Map</option>
+<option value="Abyss">Abyss</option>
+<option value="Ascent">Ascent</option>
+<option value="Bind">Bind</option>
+<option value="Breeze">Breeze</option>
+<option value="Corrode">Corrode</option>
+<option value="Fracture">Fracture</option>
+<option value="Haven">Haven</option>
+<option value="Icebox">Icebox</option>
+<option value="Lotus">Lotus</option>
+<option value="Pearl">Pearl</option>
+<option value="Split">Split</option>
+<option value="Sunset">Sunset</option>
+</select>
+
+<select id="comp" multiple></select>
+
+<input type="text" id="score" placeholder="Score (13-8)" required>
+<input type="text" id="date" placeholder="dd/mm/yyyy" maxlength="10" required>
+
+<div style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px;">
+<button type="submit" class="formBtn">Add Match</button>
+<button type="button" class="formBtn" onclick="cancelMatchForm()">Cancel</button>
+</div>
+
+</form>
+
+</div>
+
+<table>
+
+<thead>
+<tr>
+<th></th>
+<th>Date</th>
+<th>Team</th>
+<th>Map</th>
+<th>Comp</th>
+<th>Score</th>
+<th></th>
+</tr>
+</thead>
+
+<tbody id="matchTable"></tbody>
+</table>
+
+<div id="pagination" style="margin-top:15px; display:flex; justify-content:center; align-items:center; gap:14px;"></div>
+
+</div>
+
+<div class="rightColumn">
+
+<div class="card" id="rosterCard">
+
+<h2>
+Roster
+<div class="cardActions">
+<button id="addPlayerBtn" class="addBtn">+</button>
+</div>
+</h2>
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Name</th>
+<th>Role</th>
+<th>Agents</th>
+<th></th>
+</tr>
+</thead>
+
+<tbody id="rosterTable"></tbody>
+</table>
+
+<div id="playerFormSection" class="hidden">
+
+<h3>Add Player</h3>
+
+<form id="playerForm">
+
+<input type="text" id="playerName" placeholder="Player Name" required>
+
+<input type="text" id="role" placeholder="Role" required>
+
+<select id="agent" multiple placeholder="Choose agent"></select>
+
+<div style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px;">
+<button type="submit" class="formBtn">Add Player</button>
+<button type="button" class="formBtn" onclick="cancelPlayerForm()">Cancel</button>
+</div>
+
+</form>
+
+</div>
+
+
+<div id="playerEditSection" class="hidden">
+
+<h3>Players</h3>
+
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Role</th>
+<th>Agents</th>
+<th></th>
+</tr>
+</thead>
+
+<tbody id="editPlayerTable"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<h2>Stats</h2>
+
+<div class="statsGrid">
+
+<div class="statBox">
+<div class="statTitle">Total Matches</div>
+<div class="statValue" id="totalMatches">0</div>
+</div>
+
+<div class="statBox">
+<div class="statTitle">Wins</div>
+<div class="statValue" id="wins">0</div>
+</div>
+
+<div class="statBox">
+<div class="statTitle">Losses</div>
+<div class="statValue" id="losses">0</div>
+</div>
+
+<div class="statBox">
+<div class="statTitle">Win Rate</div>
+<div class="statValue" id="winrate">0%</div>
+</div>
+
+</div>
+
+<h3 style="margin-top:20px;">Maps</h3>
+
+<table class="mapStatsTable">
+<thead>
+<tr>
+<th>Map</th>
+<th>Win %</th>
+<th>Wins</th>
+<th>Losses</th>
+</tr>
+</thead>
+
+<tbody id="mapStats"></tbody>
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+import { 
+  getFirestore,
+  collection,
+  addDoc,
+  deleteDoc,
+  doc,
+  updateDoc,
+  onSnapshot,
+  query,
+  orderBy
+} from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAv6FpltyJQAtC04tssKr600wJEId7gFQE",
+  authDomain: "kipu-blaze.firebaseapp.com",
+  projectId: "kipu-blaze",
+  storageBucket: "kipu-blaze.firebasestorage.app",
+  messagingSenderId: "98879685355",
+  appId: "1:98879685355:web:2cad7d4ca4a251f9d5b4ae"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+console.log("Firebase connected");
+
+let matches = [];
+
+function listenMatches(){
+
+onSnapshot(
+query(
+collection(db,"matches"),
+orderBy("date","desc")
+),
+snapshot => {
+
+matches = [];
+
+snapshot.forEach(docSnap=>{
+matches.push({
+id: docSnap.id,
+...docSnap.data()
+});
+});
+
+refreshUI();
+
+});
+
+}
+
+let players = [];
+
+function listenPlayers(){
+
+onSnapshot(
+query(collection(db,"players"), orderBy("order")),
+snapshot => {
+
+players = [];
+
+snapshot.forEach(docSnap=>{
+players.push({
+id: docSnap.id,
+...docSnap.data()
+});
+});
+
+refreshUI();
+
+});
+
+}
+
+const AGENTS = [
+"Jett","Raze","Phoenix","Reyna","Yoru","Neon","Iso","Waylay",
+"Sova","Fade","Skye","Gekko","Breach","KAY/O","Tejo",
+"Omen","Brimstone","Viper","Astra","Harbor","Clove","Miks",
+"Cypher","Killjoy","Chamber","Deadlock","Sage","Vyse","Veto"
+];
+const MAPS = [
+"Abyss",
+"Ascent",
+"Bind",
+"Breeze",
+"Corrode",
+"Fracture",
+"Haven",
+"Icebox",
+"Lotus",
+"Pearl",
+"Split",
+"Sunset"
+];
+
+function populateAgentSelectors(){
+
+const agentSelect = document.getElementById("agent");
+const compSelect = document.getElementById("comp");
+
+AGENTS.forEach(agent => {
+
+const option1 = document.createElement("option");
+option1.value = agent;
+option1.textContent = agent;
+agentSelect.appendChild(option1);
+
+const option2 = document.createElement("option");
+option2.value = agent;
+option2.textContent = agent;
+compSelect.appendChild(option2);
+
+});
+
+}
+
+const matchTable = document.getElementById("matchTable");
+const rosterTable = document.getElementById("rosterTable");
+
+const editPlayerTable = document.getElementById("editPlayerTable");
+
+const winsSpan = document.getElementById("wins");
+const lossesSpan = document.getElementById("losses");
+const winrateSpan = document.getElementById("winrate");
+const totalMatches = document.getElementById("totalMatches");
+
+let editingMatchIndex = null;
+let editingPlayerIndex = null;
+let rosterEditMode = false;
+let matchEditMode = false;
+let collapsedMatches = {};
+
+/* pagination */
+let currentPage = 1;
+const rowsPerPage = 25;
+function refreshUI(){
+
+updateTeamFilter();
+renderMatches();
+renderPlayers();
+updateStats();
+renderMapStats();
+
+}
+
+
+
+function formatDate(date){
+
+const d = new Date(date);
+
+const day = String(d.getDate()).padStart(2,"0");
+const month = String(d.getMonth()+1).padStart(2,"0");
+const year = d.getFullYear();
+
+return `${day}/${month}/${year}`;
+
+}
+
+function convertDate(input){
+
+const [day,month,year] = input.split("/");
+
+return `${year}-${month}-${day}`;
+
+}
+
+function isWin(score){
+
+const [team,enemy] = score.split("-").map(Number);
+return team > enemy;
+
+}
+
+function updateStats(){
+
+const filter = document.getElementById("teamFilter").value || "all";
+
+const filtered = filter === "all"
+? matches
+: matches.filter(m => m.team === filter);
+
+let wins = 0;
+
+filtered.forEach(m=>{
+if(isWin(m.score)) wins++;
+});
+
+const total = filtered.length;
+const losses = total - wins;
+const winrate = total ? ((wins/total)*100).toFixed(1) : 0;
+
+totalMatches.textContent = total;
+winsSpan.textContent = wins;
+lossesSpan.textContent = losses;
+winrateSpan.textContent = winrate+"%";
+
+}
+
+function getMapImage(map){
+
+const file = map
+.toLowerCase()
+.replace(" ", "");
+
+return `images/maps/${file}.jpg`;
+
+}
+
+function renderMapStats(){
+
+const mapStats = {};
+
+MAPS.forEach(map=>{
+mapStats[map] = {wins:0,total:0};
+});
+
+/* collect stats */
+const filter = document.getElementById("teamFilter").value || "all";
+
+const filtered = filter === "all"
+? matches
+: matches.filter(m => m.team === filter);
+
+filtered.forEach(m=>{
+
+if(!mapStats[m.map]){
+mapStats[m.map] = {wins:0,total:0};
+}
+
+mapStats[m.map].total++;
+
+if(isWin(m.score)){
+mapStats[m.map].wins++;
+}
+
+});
+
+let html = "";
+
+Object.entries(mapStats)
+.map(([map,data]) => {
+
+const losses = data.total - data.wins;
+const winrate = data.total ? (data.wins / data.total) * 100 : 0;
+
+return {
+map,
+wins:data.wins,
+losses,
+total:data.total,
+winrate
+};
+
+})
+.sort((a,b)=> 
+(b.winrate - a.winrate) || (b.total - a.total)
+)
+.forEach(data=>{
+
+const percent = data.winrate.toFixed(1);
+
+const unusedClass = data.total === 0 ? "mapUnused" : "";
+
+html += `
+<tr>
+<td>
+<div class="mapCell ${unusedClass}" style="background-image:url('${getMapImage(data.map)}')">
+<div class="mapOverlay">${data.map}</div>
+</div>
+</td>
+
+<td class="mapWinrateBar">
+<div class="winBar">
+<div class="winBarFill" style="width:${percent}%"></div>
+</div>
+<div class="winPercent">${percent}%</div>
+</td>
+
+<td class="mapWins">${data.wins}</td>
+<td class="mapLosses">${data.losses}</td>
+
+</tr>
+`;
+
+});
+
+document.getElementById("mapStats").innerHTML = html;
+
+}
+
+function updateTeamFilter(){
+
+const filter = document.getElementById("teamFilter");
+
+/* save current selected team */
+const currentTeam = filter.value;
+
+/* build list of teams */
+const teams = [...new Set(matches.map(m=>m.team))];
+
+/* rebuild dropdown */
+filter.innerHTML = `<option value="all">All Teams</option>`;
+
+teams.forEach(team=>{
+filter.innerHTML += `<option value="${team}">${team}</option>`;
+});
+
+/* restore previous selection */
+if(currentTeam && teams.includes(currentTeam)){
+filter.value = currentTeam;
+}else{
+filter.value = "all";
+}
+
+}
+
+window.toggleMatchGroup = function(key){
+
+collapsedMatches[key] = !collapsedMatches[key];
+
+renderMatches();
+
+}
+
+function renderMatches(){
+
+const filter = document.getElementById("teamFilter").value || "all";
+
+let html = "";
+
+/* sort matches by date, team, map */
+const sorted = matches;
+
+/* apply team filter */
+const filtered = filter==="all"
+? sorted
+: sorted.filter(m=>m.team===filter);
+
+/* group matches by date first */
+const dateGroups = {};
+
+filtered.forEach(m=>{
+
+if(!dateGroups[m.date]) dateGroups[m.date] = {};
+
+if(!dateGroups[m.date][m.team]) dateGroups[m.date][m.team] = [];
+
+dateGroups[m.date][m.team].push(m);
+
+});
+
+
+Object.entries(dateGroups).forEach(([date,teams])=>{
+
+/* DATE ROW */
+html += `
+<tr style="background:#191919;font-weight:bold;">
+<td></td>
+<td colspan="6">${formatDate(date)}</td>
+</tr>
+`;
+
+Object.entries(teams).forEach(([team,maps])=>{
+
+const key = `${date}-${team}`;
+const collapsed = matchEditMode ? false : collapsedMatches[key];
+
+html += `
+<tr style="background:#1c1c1c;font-weight:600;">
+<td></td>
+<td></td>
+
+<td colspan="5">
+<div class="teamRow">
+<button class="dropdownBtn"
+onclick="event.stopPropagation(); toggleMatchGroup('${key}')">
+<span class="arrow ${collapsed ? 'right' : 'down'}"></span>
+</button>
+<span>${team}</span>
+</div>
+</td>
+
+</tr>
+`;
+
+if(!collapsed){
+
+maps
+.sort((a,b)=>(a.order || 0)-(b.order || 0))
+.forEach(m=>{
+
+html += `
+<tr data-id="${m.id}">
+<td class="matchDrag ${matchEditMode ? '' : 'hidden'}">☰</td>
+<td></td>
+<td></td>
+
+<td>${m.map}</td>
+
+<td>
+${m.comp ? m.comp.map(a =>
+`<img class="agentIcon" src="images/agents/${a.toLowerCase().replace("/", "").replace(" ", "")}.png">`
+).join("") : ""}
+</td>
+
+<td style="color:${isWin(m.score) ? '#4caf50' : '#ff4d4d'}; font-weight:bold;">
+${m.score}
+</td>
+
+<td>
+<button type="button"
+class="editBtn ${matchEditMode ? '' : 'hidden'}"
+onclick="editMatch('${m.id}')">✏️</button>
+
+<button type="button"
+class="editBtn deleteBtn ${matchEditMode ? '' : 'hidden'}"
+onclick="deleteMatch('${m.id}')">✖</button>
+</td>
+</tr>
+`;
+
+});
+
+}
+
+});
+
+});
+
+matchTable.innerHTML = html;
+
+}
+
+function renderPlayers(){
+
+rosterTable.innerHTML="";
+
+players.forEach((p,i)=>{
+
+rosterTable.innerHTML+=`
+<tr data-id="${p.id}">
+<td class="dragHandle">☰</td>
+<td contenteditable="false" id="name-${i}">${p.name}</td>
+<td contenteditable="false" id="role-${i}">${p.role}</td>
+<td id="agents-${i}">
+${p.agent ? p.agent.map(a =>
+`<img class="agentIcon" src="images/agents/${a.toLowerCase().replace("/", "").replace(" ", "")}.png" title="${a}">`
+).join("") : ""}
+</td>
+
+<td>
+
+<button class="editBtn ${rosterEditMode ? "" : "hidden"}"
+id="playerEdit-${i}"
+onclick="enablePlayerEdit(${i})">✏️</button>
+
+<button class="editBtn deleteBtn ${rosterEditMode ? "" : "hidden"}"
+onclick="deletePlayer(${i})">✖</button>
+
+</td>
+
+</tr>
+`;
+
+});
+
+}
+
+function renderEditMatches(){
+
+editMatchTable.innerHTML="";
+
+/* sort matches by newest date */
+const sorted = [...matches].sort(
+(a,b)=> b.date.localeCompare(a.date)
+);
+
+sorted.forEach((m,i)=>{
+
+editMatchTable.innerHTML+=`
+<tr>
+<td>${formatDate(m.date)}</td>
+<td>${m.team}</td>
+<td>${m.map}</td>
+<td>${m.comp ? m.comp.map(a =>
+`<img class="agentIcon" src="images/agents/${a.toLowerCase().replace("/", "").replace(" ", "")}.png" title="${a}">`
+).join(" ") : ""}</td>
+<td>${m.score}</td>
+<td>
+
+<button class="editBtn"
+onclick="editMatch('${m.id}')">✏️</button>
+
+<button class="editBtn deleteBtn"
+onclick="deleteMatch('${m.id}')">✖</button>
+
+</td>
+</tr>
+`;
+
+});
+
+}
+
+function renderEditPlayers(){
+
+editPlayerTable.innerHTML="";
+
+players.forEach((p,i)=>{
+
+editPlayerTable.innerHTML+=`
+<tr>
+<td>${p.name}</td>
+<td>${p.role}</td>
+<td id="agents-${i}">
+${p.agent ? p.agent.map(a =>
+`<img class="agentIcon" src="images/agents/${a.toLowerCase().replace("/", "").replace(" ", "")}.png" title="${a}">`
+).join(" ") : ""}
+</td>
+<td>
+
+<button class="editBtn"
+onclick="editPlayer(${i})">✏️</button>
+
+<button class="editBtn deleteBtn"
+onclick="deletePlayer(${i})">✖</button>
+
+</td>
+</tr>
+`;
+
+});
+
+}
+
+function toggleRosterEdit(){
+
+rosterEditMode = !rosterEditMode;
+
+document.getElementById("playerEditSection").classList.toggle("hidden");
+
+renderEditPlayers();
+
+}
+
+function toggleMatchEdit(){
+
+matchEditMode = !matchEditMode;
+
+document.getElementById("matchEditSection").classList.toggle("hidden");
+document.getElementById("matchFormSection").classList.toggle("hidden");
+
+renderEditMatches();
+
+}
+
+window.editMatch = function(id){
+
+openMatchForm(true);
+document.getElementById("matchFormSection")
+.scrollIntoView({behavior:"smooth",block:"start"});
+
+document.querySelector("#matchFormSection h3").textContent = "Edit Match";
+document.querySelector("#matchForm button[type='submit']").textContent = "Update Match";
+
+const index = matches.findIndex(m => m.id == id);
+
+if(index === -1) return;
+
+const m = matches[index];
+
+document.getElementById("team").value = m.team;
+document.getElementById("map").value = m.map;
+document.getElementById("score").value = m.score;
+document.getElementById("date").value = formatDate(m.date);
+
+const compSelect = document.getElementById("comp");
+const compTom = compSelect.tomselect;
+
+compTom.clear();
+
+if(m.comp){
+m.comp.forEach(agent=>{
+compTom.addItem(agent);
+});
+}
+
+editingMatchIndex = index;
+
+}
+
+function editPlayer(index){
+
+const p = players[index];
+
+playerName.value = p.name;
+role.value = p.role;
+
+editingPlayerIndex = index;
+
+}
+
+window.deleteMatch = async function(id){
+
+await deleteDoc(doc(db,"matches",id));
+
+cancelMatchForm();
+
+}
+
+window.deletePlayer = async function(index){
+
+const player = players[index];
+
+await deleteDoc(doc(db,"players",player.id));
+
+
+cancelPlayerForm();
+
+}
+
+function enableEdit(index){
+
+const nameCell = document.getElementById(`name-${index}`);
+const roleCell = document.getElementById(`role-${index}`);
+const agentCell = document.getElementById(`agents-${index}`);
+
+nameCell.contentEditable = true;
+roleCell.contentEditable = true;
+
+const currentAgents = players[index].agent || [];
+
+agentCell.innerHTML = `
+<select id="agentEdit-${index}" multiple></select>
+`;
+
+const select = document.getElementById(`agentEdit-${index}`);
+
+AGENTS.forEach(agent=>{
+const option = document.createElement("option");
+option.value = agent;
+option.textContent = agent;
+
+if(currentAgents.includes(agent)){
+option.selected = true;
+}
+
+select.appendChild(option);
+});
+
+new TomSelect(select,{
+plugins:['remove_button'],
+maxItems:null
+});
+
+document.getElementById(`save-${index}`).classList.remove("hidden");
+
+const editBtn = document.querySelector(`#save-${index}`).nextElementSibling;
+editBtn.classList.add("hidden");
+
+const deleteBtn = editBtn.nextElementSibling;
+deleteBtn.classList.add("hidden");
+
+}
+
+window.savePlayerRow = async function(index){
+
+const name = document.getElementById(`name-${index}`).innerText;
+const role = document.getElementById(`role-${index}`).innerText;
+
+const agentSelect = document.getElementById(`agentEdit-${index}`);
+
+const agents =
+Array.from(agentSelect.selectedOptions).map(o=>o.value);
+
+const player = players[index];
+
+await updateDoc(doc(db,"players",player.id),{
+name:name,
+role:role,
+agent:agents
+});
+
+
+const editBtn = document.getElementById(`playerEdit-${index}`);
+
+editBtn.innerHTML = "✏️";
+editBtn.classList.remove("saveBtn");
+editBtn.onclick = () => enablePlayerEdit(index);
+
+refreshUI();
+
+/* keep buttons visible while editing */
+document.querySelectorAll("#rosterTable .editBtn")
+.forEach(btn => btn.classList.remove("hidden"));
+
+/* close form */
+cancelPlayerForm();
+
+}
+
+window.enableMatchEdit = function(id){
+
+const index = matches.findIndex(m => m.id == id);
+
+if(index === -1) return;
+
+const dateCell = document.getElementById(`date-${id}`);
+const teamCell = document.getElementById(`team-${id}`);
+const mapCell = document.getElementById(`map-${id}`);
+const scoreCell = document.getElementById(`score-${id}`);
+const compCell = document.getElementById(`comp-${id}`);
+
+dateCell.contentEditable = true;
+teamCell.contentEditable = true;
+mapCell.contentEditable = true;
+scoreCell.contentEditable = true;
+
+const currentComp = matches[index].comp || [];
+
+compCell.innerHTML = `<select id="compEdit-${id}" multiple></select>`;
+
+const select = document.getElementById(`compEdit-${id}`);
+
+AGENTS.forEach(agent=>{
+
+const option = document.createElement("option");
+option.value = agent;
+option.textContent = agent;
+
+if(currentComp.includes(agent)){
+option.selected = true;
+}
+
+
+select.appendChild(option);
+
+});
+
+/* turn edit button into save */
+
+const editBtn = document.getElementById(`matchEdit-${id}`);
+
+editBtn.innerHTML = "✔";
+editBtn.classList.add("saveBtn");
+editBtn.onclick = () => saveMatchRow(id);
+
+new TomSelect(select,{
+plugins:['remove_button'],
+maxItems:5
+});
+
+}
+
+async function saveMatchRow(id){
+
+const index = matches.findIndex(m => m.id == id);
+
+if(index === -1) return;
+
+const dateText = document.getElementById(`date-${id}`).innerText;
+const team = document.getElementById(`team-${id}`).innerText;
+const map = document.getElementById(`map-${id}`).innerText;
+const score = document.getElementById(`score-${id}`).innerText;
+
+const date = convertDate(dateText);
+
+const compSelect = document.getElementById(`compEdit-${id}`);
+
+const comp =
+Array.from(compSelect.selectedOptions).map(o=>o.value);
+
+await updateDoc(doc(db,"matches",id),{
+team:team,
+map:map,
+score:score,
+date:date,
+comp:comp
+});
+
+
+const editBtn = document.getElementById(`matchEdit-${id}`);
+
+editBtn.innerHTML = "✏️";
+editBtn.classList.remove("saveBtn");
+editBtn.onclick = () => enableMatchEdit(id);
+
+refreshUI();
+
+/* close form and hide buttons */
+cancelMatchForm();
+
+}
+
+window.enablePlayerEdit = function(index){
+
+const nameCell = document.getElementById(`name-${index}`);
+const roleCell = document.getElementById(`role-${index}`);
+const agentCell = document.getElementById(`agents-${index}`);
+
+nameCell.contentEditable = true;
+roleCell.contentEditable = true;
+
+const currentAgents = players[index].agent || [];
+
+agentCell.innerHTML = `<select id="agentEdit-${index}" multiple></select>`;
+
+const select = document.getElementById(`agentEdit-${index}`);
+
+AGENTS.forEach(agent=>{
+
+const option = document.createElement("option");
+option.value = agent;
+option.textContent = agent;
+
+if(currentAgents.includes(agent)){
+option.selected = true;
+}
+
+select.appendChild(option);
+
+});
+
+new TomSelect(select,{
+plugins:['remove_button'],
+maxItems:null
+});
+
+const editBtn = document.getElementById(`playerEdit-${index}`);
+
+editBtn.innerHTML = "✔";
+editBtn.classList.add("saveBtn");
+editBtn.onclick = () => savePlayerRow(index);
+
+}
+
+window.openPlayerForm = function(){
+
+rosterEditMode = true;
+
+document.getElementById("playerFormSection").classList.remove("hidden");
+
+renderPlayers();
+
+}
+
+window.cancelPlayerForm = function(){
+
+  rosterEditMode = false;
+
+document.getElementById("playerFormSection").classList.add("hidden");
+document.getElementById("playerEditSection").classList.add("hidden");
+
+editingPlayerIndex = null;
+
+document.getElementById("playerForm").reset();
+
+const agentSelect = document.getElementById("agent");
+
+if(agentSelect.tomselect){
+agentSelect.tomselect.clear();
+}
+
+/* hide edit buttons */
+document.querySelectorAll("#rosterTable .editBtn")
+.forEach(btn=>btn.classList.add("hidden"));
+
+/* THIS FIXES THE SAME BUG FOR ROSTER */
+renderPlayers();
+
+}
+
+function openPlayerEdit(){
+document.getElementById("playerEditSection").classList.remove("hidden");
+document.getElementById("playerFormSection").classList.add("hidden");
+renderEditPlayers();
+}
+
+function closePlayerEdit(){
+document.getElementById("playerFormSection").classList.add("hidden");
+document.getElementById("playerEditSection").classList.add("hidden");
+}
+
+window.openMatchForm = function(){
+
+matchEditMode = true;
+
+document.getElementById("matchFormSection").classList.remove("hidden");
+document.getElementById("addMatchBtn").disabled = true;
+
+/* refresh table so buttons appear */
+renderMatches();
+
+}
+
+function openMatchEdit(){
+document.getElementById("matchEditSection").classList.remove("hidden");
+document.getElementById("matchFormSection").classList.add("hidden");
+document.getElementById("matchSaveBtn").classList.remove("hidden");
+renderEditMatches();
+}
+
+function closeMatchEdit(){
+document.getElementById("matchFormSection").classList.add("hidden");
+document.getElementById("matchEditSection").classList.add("hidden");
+document.getElementById("matchSaveBtn").classList.add("hidden");
+}
+
+document.getElementById("matchForm").addEventListener("submit",async e=>{
+
+e.preventDefault();
+
+const convertedDate = convertDate(date.value);
+
+const compSelected =
+Array.from(document.getElementById("comp").selectedOptions)
+.map(o=>o.value);
+
+if(editingMatchIndex !== null){
+
+const id = matches[editingMatchIndex].id;
+
+await updateDoc(doc(db,"matches",id),{
+team:team.value,
+map:map.value,
+comp:compSelected,
+score:score.value,
+date:convertedDate
+});
+
+
+editingMatchIndex = null;
+
+}else{
+
+const sameSeries = matches.filter(m =>
+m.date === convertedDate && m.team === team.value
+);
+
+/* shift existing maps down */
+for(const m of sameSeries){
+await updateDoc(doc(db,"matches",m.id),{
+order:(m.order || 0) + 1
+});
+}
+
+/* new map becomes first */
+await addDoc(collection(db,"matches"),{
+team:team.value,
+map:map.value,
+comp:compSelected,
+score:score.value,
+date:convertedDate,
+order:1
+});
+
+
+}
+
+
+cancelMatchForm();
+
+document.querySelector("#matchTable").closest("table").classList.remove("hidden");
+
+e.target.reset();
+
+});
+
+
+document.getElementById("playerForm").addEventListener("submit",async e=>{
+
+e.preventDefault();
+
+const selectedAgents =
+Array.from(document.getElementById("agent").selectedOptions)
+.map(o=>o.value);
+
+if(editingPlayerIndex !== null){
+
+const id = players[editingPlayerIndex].id;
+
+await updateDoc(doc(db,"players",id),{
+name:playerName.value,
+role:role.value,
+agent:selectedAgents
+});
+
+
+editingPlayerIndex = null;
+
+}else{
+
+const maxOrder = players.length
+  ? Math.max(...players.map(p => p.order || 0))
+  : 0;
+
+await addDoc(collection(db,"players"),{
+name:playerName.value,
+role:role.value,
+agent:selectedAgents,
+order: maxOrder + 1
+});
+
+}
+
+
+cancelPlayerForm();   // CLOSE FORM AFTER ADDING
+
+e.target.reset();
+
+});
+
+document.getElementById("teamFilter").addEventListener("change",()=>{
+currentPage = 1;
+refreshUI();
+});
+
+populateAgentSelectors();
+
+listenMatches();
+listenPlayers();
+enableRosterDrag();
+enableMatchDrag();
+
+function enableMatchDrag(){
+
+new Sortable(matchTable,{
+animation:150,
+handle: ".matchDrag",
+draggable: "tr[data-id]",
+
+onEnd: async function(){
+
+const rows = [...matchTable.querySelectorAll("tr[data-id]")];
+
+for(const [index,row] of rows.entries()){
+
+const id = row.dataset.id;
+
+await updateDoc(doc(db,"matches",id),{
+order:index + 1
+});
+
+}
+
+/* KEEP EDIT MODE ACTIVE */
+matchEditMode = true;
+
+/* SHOW EDIT BUTTONS AGAIN */
+document.querySelectorAll("#matchTable .editBtn")
+.forEach(btn => btn.classList.remove("hidden"));
+
+/* SHOW DRAG HANDLES AGAIN */
+document.querySelectorAll("#matchTable .matchDrag")
+.forEach(el => el.classList.remove("hidden"));
+
+}
+
+});
+
+}
+
+document.getElementById("addMatchBtn").addEventListener("click", openMatchForm);
+document.getElementById("addPlayerBtn").addEventListener("click", openPlayerForm);
+
+new TomSelect("#agent",{
+plugins:['remove_button'],
+create:false,
+maxItems:null
+});
+
+new TomSelect("#comp",{
+plugins:['remove_button'],
+maxItems:5
+});
+
+window.cancelMatchForm = function(){
+
+matchEditMode = false;
+editingMatchIndex = null;
+
+document.getElementById("addMatchBtn").disabled = false;
+
+/* hide form */
+document.getElementById("matchFormSection").classList.add("hidden");
+
+/* hide edit/delete buttons */
+document.querySelectorAll("#matchTable .editBtn")
+.forEach(btn=>btn.classList.add("hidden"));
+
+/* HIDE DRAG HANDLES */
+document.querySelectorAll("#matchTable .matchDrag")
+.forEach(el=>el.classList.add("hidden"));
+
+/* reset form */
+document.getElementById("matchForm").reset();
+document.querySelector("#matchFormSection h3").textContent = "Add Match";
+document.querySelector("#matchForm button[type='submit']").textContent = "Add Match";
+
+const compSelect = document.getElementById("comp");
+if(compSelect.tomselect){
+compSelect.tomselect.clear();
+}
+
+
+/* THIS FIXES YOUR BUG */
+renderMatches();
+
+}
+
+function getAgentIcon(agent){
+
+const file = agent
+.toLowerCase()
+.replace("/", "")
+.replace(" ", "");
+
+return `https://media.valorant-api.com/agents/${file}.png`;
+
+}
+
+document.getElementById("date").addEventListener("input",function(e){
+
+let v = e.target.value.replace(/\D/g,"");
+
+if(v.length >= 2) v = v.slice(0,2) + "/" + v.slice(2);
+if(v.length >= 5) v = v.slice(0,5) + "/" + v.slice(5);
+
+e.target.value = v.slice(0,10);
+
+});
+
+function renderPagination(totalRows){
+
+const totalPages = Math.ceil(totalRows / rowsPerPage);
+const container = document.getElementById("pagination");
+
+container.innerHTML = "";
+
+if(totalPages <= 1) return;
+
+/* PREVIOUS BUTTON */
+
+const prev = document.createElement("button");
+prev.className = "formBtn";
+prev.textContent = "◀ Previous";
+prev.style.width = "140px";
+
+prev.disabled = currentPage === 1;
+
+prev.onclick = ()=>{
+currentPage--;
+renderMatches();
+window.scrollTo({ top: 0, behavior: "smooth" });
+};
+
+container.appendChild(prev);
+
+/* PAGE INFO */
+
+const pageInfo = document.createElement("span");
+
+pageInfo.style.padding = "8px 16px";
+pageInfo.style.color = "#9aa4ad";
+pageInfo.style.fontWeight = "500";
+
+pageInfo.textContent = `Page ${currentPage} / ${totalPages}`;
+
+container.appendChild(pageInfo);
+
+/* NEXT BUTTON */
+
+const next = document.createElement("button");
+next.className = "formBtn";
+next.textContent = "Next ▶";
+next.style.width = "140px";
+
+next.disabled = currentPage === totalPages;
+
+next.onclick = ()=>{
+currentPage++;
+renderMatches();
+window.scrollTo({ top: 0, behavior: "smooth" });
+};
+
+container.appendChild(next);
+
+}
+
+function enableRosterDrag(){
+
+new Sortable(rosterTable,{
+animation:150,
+handle: ".dragHandle",
+filter: ".editBtn",
+preventOnFilter: false,
+
+onEnd: async function(){
+
+const rows = [...rosterTable.querySelectorAll("tr")];
+
+rows.forEach(async (row,index)=>{
+
+const id = row.dataset.id;
+
+await updateDoc(doc(db,"players",id),{
+order:index + 1
+});
+
+});
+
+}
+
+});
+
+}
+
+</script>
+
+</body>
+</html>
