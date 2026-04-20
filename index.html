@@ -523,6 +523,10 @@ text-align:center;
 width:20px;
 }
 
+.hidden.dragHandle{
+display:none;
+}
+
 </style>
 </head>
 
@@ -1179,7 +1183,7 @@ players.forEach((p,i)=>{
 
 rosterTable.innerHTML+=`
 <tr data-id="${p.id}">
-<td class="dragHandle">☰</td>
+<td class="dragHandle ${rosterEditMode ? '' : 'hidden'}">☰</td>
 <td contenteditable="false" id="name-${i}">${p.name}</td>
 <td contenteditable="false" id="role-${i}">${p.role}</td>
 <td id="agents-${i}">
@@ -1582,8 +1586,9 @@ document.getElementById("playerFormSection").classList.remove("hidden");
 
 renderPlayers();
 
-}
+enableRosterDrag();
 
+}
 window.cancelPlayerForm = function(){
 
   rosterEditMode = false;
@@ -1607,6 +1612,10 @@ document.querySelectorAll("#rosterTable .editBtn")
 
 /* THIS FIXES THE SAME BUG FOR ROSTER */
 renderPlayers();
+
+if(rosterSortable){
+rosterSortable.option("disabled", true);
+}
 
 }
 
@@ -1759,7 +1768,6 @@ populateAgentSelectors();
 
 listenMatches();
 listenPlayers();
-enableRosterDrag();
 enableMatchDrag();
 
 function enableMatchDrag(){
@@ -1927,13 +1935,20 @@ container.appendChild(next);
 
 }
 
+let rosterSortable;
+
 function enableRosterDrag(){
 
-new Sortable(rosterTable,{
+if(rosterSortable){
+rosterSortable.option("disabled", false);
+return;
+}
+
+rosterSortable = new Sortable(rosterTable,{
 animation:150,
 handle: ".dragHandle",
 filter: ".editBtn",
-preventOnFilter: false,
+preventOnFilter:false,
 
 onEnd: async function(){
 
