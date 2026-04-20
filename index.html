@@ -466,8 +466,10 @@ transform:scale(1.02);
 }
 
 .dropdownBtn{
-width:16px;
-height:16px;
+width:18px;
+height:18px;
+font-size:11px;
+margin-right:6px;
 margin-right:8px;
 padding:0;
 display:inline-flex;
@@ -1071,17 +1073,24 @@ const collapsed = collapsedMatches[key];
 
 matchTable.innerHTML += `
 <tr style="background:#1c1c1c;font-weight:600;">
+
 <td></td>
 
 <td>
+<span style="display:flex;align-items:center;gap:8px;">
+
 <button class="dropdownBtn"
 onclick="event.stopPropagation(); toggleMatchGroup('${key}')">
 ${collapsed ? "▸" : "▾"}
 </button>
-${team}
+
+<span>${team}</span>
+
+</span>
 </td>
 
 <td colspan="4"></td>
+
 </tr>
 `;
 
