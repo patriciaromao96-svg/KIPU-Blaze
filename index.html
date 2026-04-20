@@ -480,6 +480,7 @@ color:white;
 font-size:10px;
 line-height:1;
 cursor:pointer;
+margin-right:6px;
 }
 
 .dropdownBtn:hover{
@@ -1037,16 +1038,16 @@ const filtered = filter==="all"
 ? sorted
 : sorted.filter(m=>m.team===filter);
 
-/* group matches by date + team */
-const groups = {};
+/* group matches by date first */
+const dateGroups = {};
 
 filtered.forEach(m=>{
 
-const key = `${m.date}-${m.team}`;
+if(!dateGroups[m.date]) dateGroups[m.date] = {};
 
-if(!groups[key]) groups[key] = [];
+if(!dateGroups[m.date][m.team]) dateGroups[m.date][m.team] = [];
 
-groups[key].push(m);
+dateGroups[m.date][m.team].push(m);
 
 });
 
@@ -1055,37 +1056,44 @@ Object.values(groups).forEach(group=>{
 group.sort((a,b)=>(a.order || 0) - (b.order || 0));
 });
 
-/* render grouped matches */
+Object.entries(dateGroups).forEach(([date,teams])=>{
 
-Object.values(groups).forEach(group=>{
+/* DATE ROW */
+matchTable.innerHTML += `
+<tr style="background:#191919;font-weight:bold;">
+<td>${formatDate(date)}</td>
+<td colspan="5"></td>
+</tr>
+`;
 
-const first = group[0];
+/* TEAMS INSIDE DATE */
+Object.entries(teams).forEach(([team,maps])=>{
 
-const key = `${first.date}-${first.team}`;
+const key = `${date}-${team}`;
 const collapsed = collapsedMatches[key];
 
 matchTable.innerHTML += `
-<tr style="background:#191919;font-weight:bold;">
-
+<tr style="background:#1c1c1c;">
 <td>
 <button class="dropdownBtn"
 onclick="event.stopPropagation(); toggleMatchGroup('${key}')">
 ${collapsed ? "▸" : "▾"}
 </button>
-${formatDate(first.date)}
 </td>
-<td>${first.team}</td>
-<td colspan="4"></td>
 
+<td>${team}</td>
+<td colspan="4"></td>
 </tr>
 `;
 
 if(!collapsed){
-group.forEach(m=>{
+
+maps
+.sort((a,b)=>(a.order || 0)-(b.order || 0))
+.forEach(m=>{
 
 matchTable.innerHTML += `
 <tr>
-
 <td></td>
 <td></td>
 
@@ -1102,24 +1110,22 @@ ${m.score}
 </td>
 
 <td>
-
 <button type="button" class="editBtn hidden"
 onclick="enableMatchEdit('${m.id}')">✏️</button>
 
 <button type="button" class="editBtn deleteBtn hidden"
 onclick="deleteMatch('${m.id}')">✖</button>
-
 </td>
-
 </tr>
 `;
 
 });
+
 }
 
 });
 
-}
+});
 
 
 function renderPlayers(){
