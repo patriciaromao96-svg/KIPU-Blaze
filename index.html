@@ -999,15 +999,16 @@ const filter = document.getElementById("teamFilter").value || "all";
 
 matchTable.innerHTML = "";
 
-/* sort matches newest first */
+/* sort matches by date, team, map */
 const sorted = [...matches].sort((a,b)=>{
 
 const dateCompare = b.date.localeCompare(a.date);
-
 if(dateCompare !== 0) return dateCompare;
 
-/* same date → alphabetical map order */
-return a.id.localeCompare(b.id);
+const teamCompare = a.team.localeCompare(b.team);
+if(teamCompare !== 0) return teamCompare;
+
+return a.map.localeCompare(b.map);
 
 });
 
@@ -1016,45 +1017,56 @@ const filtered = filter==="all"
 ? sorted
 : sorted.filter(m=>m.team===filter);
 
-/* pagination calculations */
-const start = (currentPage - 1) * rowsPerPage;
-const end = start + rowsPerPage;
+/* group matches by date + team */
+const groups = {};
 
-const pageMatches = filtered.slice(start,end);
+filtered.forEach(m=>{
 
-/* render rows */
-pageMatches.forEach((m)=>{
+const key = `${m.date}-${m.team}`;
+
+if(!groups[key]) groups[key] = [];
+
+groups[key].push(m);
+
+});
+
+/* render grouped matches */
+
+Object.values(groups).forEach(group=>{
+
+const first = group[0];
+
+matchTable.innerHTML += `
+<tr style="background:#191919;font-weight:bold;">
+<td>${formatDate(first.date)}</td>
+<td>${first.team}</td>
+<td colspan="4"></td>
+</tr>
+`;
+
+group.forEach(m=>{
 
 matchTable.innerHTML += `
 <tr>
 
-<td contenteditable="false" id="date-${m.id}">
-${formatDate(m.date)}
-</td>
+<td></td>
+<td></td>
 
-<td contenteditable="false" id="team-${m.id}">
-${m.team}
-</td>
+<td>${m.map}</td>
 
-<td contenteditable="false" id="map-${m.id}">
-${m.map}
-</td>
-
-<td id="comp-${m.id}">
+<td>
 ${m.comp ? m.comp.map(a =>
-`<img class="agentIcon" src="images/agents/${a.toLowerCase().replace("/", "").replace(" ", "")}.png" title="${a}">`
+`<img class="agentIcon" src="images/agents/${a.toLowerCase().replace("/", "").replace(" ", "")}.png">`
 ).join("") : ""}
 </td>
 
-<td contenteditable="false" id="score-${m.id}"
-style="color:${isWin(m.score) ? '#4caf50' : '#ff4d4d'}; font-weight:bold;">
+<td style="color:${isWin(m.score) ? '#4caf50' : '#ff4d4d'}; font-weight:bold;">
 ${m.score}
 </td>
 
 <td>
 
 <button type="button" class="editBtn hidden"
-id="matchEdit-${m.id}"
 onclick="enableMatchEdit('${m.id}')">✏️</button>
 
 <button type="button" class="editBtn deleteBtn hidden"
@@ -1067,8 +1079,7 @@ onclick="deleteMatch('${m.id}')">✖</button>
 
 });
 
-/* update pagination UI */
-renderPagination(filtered.length);
+});
 
 }
 
