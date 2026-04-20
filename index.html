@@ -1007,7 +1007,7 @@ const dateCompare = b.date.localeCompare(a.date);
 if(dateCompare !== 0) return dateCompare;
 
 /* same date → alphabetical map order */
-return MAPS.indexOf(a.map) - MAPS.indexOf(b.map);
+return a.id.localeCompare(b.id);
 
 });
 
