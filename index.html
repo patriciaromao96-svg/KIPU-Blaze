@@ -1763,6 +1763,7 @@ function enableMatchDrag(){
 new Sortable(matchTable,{
 animation:150,
 handle: ".matchDrag",
+draggable: "tr[data-id]",
 
 onEnd: async function(){
 
