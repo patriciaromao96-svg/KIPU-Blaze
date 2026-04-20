@@ -1104,7 +1104,7 @@ html += `
 Object.entries(teams).forEach(([team,maps])=>{
 
 const key = `${date}-${team}`;
-const collapsed = collapsedMatches[key];
+const collapsed = matchEditMode ? false : collapsedMatches[key];
 
 html += `
 <tr style="background:#1c1c1c;font-weight:600;">
