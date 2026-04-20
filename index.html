@@ -1008,7 +1008,7 @@ if(dateCompare !== 0) return dateCompare;
 const teamCompare = a.team.localeCompare(b.team);
 if(teamCompare !== 0) return teamCompare;
 
-return a.map.localeCompare(b.map);
+return (a.order || 0) - (b.order || 0);
 
 });
 
