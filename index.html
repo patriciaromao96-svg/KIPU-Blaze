@@ -866,6 +866,7 @@ const totalMatches = document.getElementById("totalMatches");
 let editingMatchIndex = null;
 let editingPlayerIndex = null;
 let rosterEditMode = false;
+let matchEditMode = false;
 let collapsedMatches = {};
 
 /* pagination */
@@ -1133,7 +1134,7 @@ maps
 
 matchTable.innerHTML += `
 <tr data-id="${m.id}">
-<td class="matchDrag hidden">☰</td>
+<td class="matchDrag ${matchEditMode ? '' : 'hidden'}">☰</td>
 <td></td>
 <td></td>
 
@@ -1150,10 +1151,12 @@ ${m.score}
 </td>
 
 <td>
-<button type="button" class="editBtn hidden"
+<button type="button"
+class="editBtn ${matchEditMode ? '' : 'hidden'}"
 onclick="enableMatchEdit('${m.id}')">✏️</button>
 
-<button type="button" class="editBtn deleteBtn hidden"
+<button type="button"
+class="editBtn deleteBtn ${matchEditMode ? '' : 'hidden'}"
 onclick="deleteMatch('${m.id}')">✖</button>
 </td>
 </tr>
@@ -1614,6 +1617,8 @@ document.getElementById("playerEditSection").classList.add("hidden");
 
 window.openMatchForm = function(){
 
+matchEditMode = true;
+
 document.getElementById("matchFormSection").classList.remove("hidden");
 
 /* disable add button */
@@ -1800,6 +1805,8 @@ maxItems:5
 });
 
 window.cancelMatchForm = function(){
+
+matchEditMode = false;
 
 document.getElementById("addMatchBtn").disabled = false;
 
