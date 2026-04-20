@@ -1106,7 +1106,7 @@ editMatchTable.innerHTML="";
 
 /* sort matches by newest date */
 const sorted = [...matches].sort(
-(a,b)=> new Date(b.date) - new Date(a.date)
+(a,b)=> b.date.localeCompare(a.date)
 );
 
 sorted.forEach((m,i)=>{
