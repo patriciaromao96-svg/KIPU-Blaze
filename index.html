@@ -1051,10 +1051,6 @@ dateGroups[m.date][m.team].push(m);
 
 });
 
-/* sort maps inside each match */
-Object.values(groups).forEach(group=>{
-group.sort((a,b)=>(a.order || 0) - (b.order || 0));
-});
 
 Object.entries(dateGroups).forEach(([date,teams])=>{
 
@@ -1073,7 +1069,7 @@ const key = `${date}-${team}`;
 const collapsed = collapsedMatches[key];
 
 matchTable.innerHTML += `
-<tr style="background:#1c1c1c;">
+<tr style="background:#1c1c1c;font-weight:600;">
 <td>
 <button class="dropdownBtn"
 onclick="event.stopPropagation(); toggleMatchGroup('${key}')">
