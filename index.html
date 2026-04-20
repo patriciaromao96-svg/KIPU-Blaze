@@ -523,6 +523,12 @@ text-align:center;
 width:20px;
 }
 
+table{
+width:100%;
+border-collapse:collapse;
+table-layout:fixed;
+}
+
 </style>
 </head>
 
@@ -1095,6 +1101,7 @@ Object.entries(dateGroups).forEach(([date,teams])=>{
 /* DATE ROW */
 html += `
 <tr style="background:#191919;font-weight:bold;">
+<td></td>
 <td>${formatDate(date)}</td>
 <td colspan="5"></td>
 </tr>
@@ -1109,6 +1116,7 @@ const collapsed = matchEditMode ? false : collapsedMatches[key];
 html += `
 <tr style="background:#1c1c1c;font-weight:600;">
 
+<td></td>
 <td></td>
 
 <td>
