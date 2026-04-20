@@ -1580,12 +1580,17 @@ editingMatchIndex = null;
 
 }else{
 
+const sameSeries = matches.filter(m =>
+m.date === convertedDate && m.team === team.value
+);
+
 await addDoc(collection(db,"matches"),{
 team:team.value,
 map:map.value,
 comp:compSelected,
 score:score.value,
-date:convertedDate
+date:convertedDate,
+order: sameSeries.length + 1
 });
 
 
