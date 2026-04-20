@@ -479,6 +479,8 @@ color:white;
 font-size:11px;
 cursor:pointer;
 margin-right:8px;
+line-height:1;
+padding:0;
 }
 
 .dropdownBtn:hover{
@@ -1072,16 +1074,13 @@ matchTable.innerHTML += `
 <td></td>
 
 <td>
-<span style="display:flex;align-items:center;gap:8px;">
-
+<div style="display:flex;align-items:center;gap:8px;height:100%;">
 <button class="dropdownBtn"
 onclick="event.stopPropagation(); toggleMatchGroup('${key}')">
 ${collapsed ? "▸" : "▾"}
 </button>
-
 <span>${team}</span>
-
-</span>
+</div>
 </td>
 
 <td colspan="4"></td>
