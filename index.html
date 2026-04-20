@@ -514,6 +514,15 @@ vertical-align:middle;
 background:#ff8c1a;
 }
 
+.matchDrag{
+cursor:grab;
+font-size:18px;
+opacity:0.6;
+user-select:none;
+text-align:center;
+width:20px;
+}
+
 </style>
 </head>
 
@@ -588,6 +597,7 @@ Match History
 
 <thead>
 <tr>
+<th></th>
 <th>Date</th>
 <th>Team</th>
 <th>Map</th>
@@ -1122,7 +1132,8 @@ maps
 .forEach(m=>{
 
 matchTable.innerHTML += `
-<tr>
+<tr data-id="${m.id}">
+<td class="matchDrag hidden">☰</td>
 <td></td>
 <td></td>
 
@@ -1609,9 +1620,12 @@ document.getElementById("matchFormSection").classList.remove("hidden");
 document.getElementById("addMatchBtn").disabled = true;
 
 /* show edit/delete buttons */
-document.querySelectorAll("#matchTable .editBtn").forEach(btn=>{
-btn.classList.remove("hidden");
-});
+document.querySelectorAll("#matchTable .editBtn")
+.forEach(btn=>btn.classList.remove("hidden"));
+
+/* SHOW DRAG HANDLES */
+document.querySelectorAll("#matchTable .matchDrag")
+.forEach(el=>el.classList.remove("hidden"));
 
 }
 
@@ -1742,6 +1756,33 @@ populateAgentSelectors();
 listenMatches();
 listenPlayers();
 enableRosterDrag();
+enableMatchDrag();
+
+function enableMatchDrag(){
+
+new Sortable(matchTable,{
+animation:150,
+handle: ".matchDrag",
+
+onEnd: async function(){
+
+const rows = [...matchTable.querySelectorAll("tr[data-id]")];
+
+rows.forEach(async (row,index)=>{
+
+const id = row.dataset.id;
+
+await updateDoc(doc(db,"matches",id),{
+order:index + 1
+});
+
+});
+
+}
+
+});
+
+}
 
 document.getElementById("addMatchBtn").addEventListener("click", openMatchForm);
 document.getElementById("addPlayerBtn").addEventListener("click", openPlayerForm);
@@ -1767,6 +1808,10 @@ document.getElementById("matchFormSection").classList.add("hidden");
 /* hide edit/delete buttons */
 document.querySelectorAll("#matchTable .editBtn")
 .forEach(btn=>btn.classList.add("hidden"));
+
+/* HIDE DRAG HANDLES */
+document.querySelectorAll("#matchTable .matchDrag")
+.forEach(el=>el.classList.add("hidden"));
 
 /* reset form */
 document.getElementById("matchForm").reset();
