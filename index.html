@@ -469,7 +469,7 @@ transform:scale(1.02);
 .dropdownBtn{
 width:18px;
 height:18px;
-display:inline-flex;
+display:flex;
 align-items:center;
 justify-content:center;
 border:none;
@@ -478,9 +478,14 @@ background:#ff7a00;
 color:white;
 font-size:11px;
 cursor:pointer;
-margin-right:8px;
-line-height:1;
-padding:0;
+margin-right:6px;
+}
+
+.teamRow{
+display:flex;
+align-items:center;
+gap:8px;
+min-height:28px;
 }
 
 .dropdownBtn:hover{
@@ -1074,7 +1079,7 @@ matchTable.innerHTML += `
 <td></td>
 
 <td>
-<div style="display:flex;align-items:center;gap:8px;height:100%;">
+<div class="teamRow">
 <button class="dropdownBtn"
 onclick="event.stopPropagation(); toggleMatchGroup('${key}')">
 ${collapsed ? "▸" : "▾"}
