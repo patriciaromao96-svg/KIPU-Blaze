@@ -1626,18 +1626,14 @@ window.openMatchForm = function(){
 
 matchEditMode = true;
 
+/* show form */
 document.getElementById("matchFormSection").classList.remove("hidden");
 
-/* disable add button */
+/* disable + button */
 document.getElementById("addMatchBtn").disabled = true;
 
-/* show edit/delete buttons */
-document.querySelectorAll("#matchTable .editBtn")
-.forEach(btn=>btn.classList.remove("hidden"));
-
-/* SHOW DRAG HANDLES */
-document.querySelectorAll("#matchTable .matchDrag")
-.forEach(el=>el.classList.remove("hidden"));
+/* IMPORTANT: re-render table so edit/delete/drag appear */
+renderMatches();
 
 }
 
