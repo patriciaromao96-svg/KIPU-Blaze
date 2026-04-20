@@ -465,6 +465,22 @@ transition:0.2s;
 transform:scale(1.02);
 }
 
+.dropdownBtn{
+width:24px;
+height:24px;
+margin-right:6px;
+border-radius:6px;
+border:none;
+background:#ff7a00;
+color:white;
+font-weight:bold;
+cursor:pointer;
+}
+
+.dropdownBtn:hover{
+background:#ff8c1a;
+}
+
 </style>
 </head>
 
@@ -994,7 +1010,7 @@ filter.value = "all";
 
 }
 
-function toggleMatchGroup(key){
+window.toggleMatchGroup = function(key){
 
 collapsedMatches[key] = !collapsedMatches[key];
 
@@ -1047,7 +1063,12 @@ matchTable.innerHTML += `
 <tr style="background:#191919;font-weight:bold; cursor:pointer;"
 onclick="toggleMatchGroup('${key}')">
 
-<td>${collapsed ? "▶" : "▼"} ${formatDate(first.date)}</td>
+<td>
+<button class="dropdownBtn">
+${collapsed ? "▶" : "▼"}
+</button>
+${formatDate(first.date)}
+</td>
 <td>${first.team}</td>
 <td colspan="4"></td>
 
