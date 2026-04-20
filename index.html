@@ -1153,7 +1153,7 @@ ${m.score}
 <td>
 <button type="button"
 class="editBtn ${matchEditMode ? '' : 'hidden'}"
-onclick="enableMatchEdit('${m.id}')">✏️</button>
+onclick="editMatch('${m.id}')">✏️</button>
 
 <button type="button"
 class="editBtn deleteBtn ${matchEditMode ? '' : 'hidden'}"
@@ -1296,6 +1296,13 @@ renderEditMatches();
 }
 
 function editMatch(id){
+
+openMatchForm();
+document.getElementById("matchFormSection")
+.scrollIntoView({behavior:"smooth",block:"start"});
+
+document.querySelector("#matchFormSection h3").textContent = "Edit Match";
+document.querySelector("#matchForm button[type='submit']").textContent = "Update Match";
 
 const index = matches.findIndex(m => m.id == id);
 
@@ -1834,6 +1841,8 @@ document.querySelectorAll("#matchTable .matchDrag")
 
 /* reset form */
 document.getElementById("matchForm").reset();
+document.querySelector("#matchFormSection h3").textContent = "Add Match";
+document.querySelector("#matchForm button[type='submit']").textContent = "Add Match";
 
 const compSelect = document.getElementById("comp");
 if(compSelect.tomselect){
