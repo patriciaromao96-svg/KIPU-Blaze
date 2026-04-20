@@ -707,7 +707,9 @@ let matches = [];
 
 function listenMatches(){
 
-onSnapshot(collection(db,"matches"), snapshot => {
+onSnapshot(
+query(collection(db,"matches"), orderBy("order")),
+snapshot => {
 
 matches = [];
 
@@ -995,9 +997,7 @@ const filter = document.getElementById("teamFilter").value || "all";
 matchTable.innerHTML = "";
 
 /* sort matches newest first */
-const sorted = [...matches].sort(
-(a,b)=> new Date(b.date) - new Date(a.date)
-);
+const sorted = [...matches];
 
 /* apply team filter */
 const filtered = filter==="all"
@@ -1557,12 +1557,17 @@ editingMatchIndex = null;
 
 }else{
 
+const maxOrder = matches.length
+? Math.max(...matches.map(m => m.order || 0))
+: 0;
+
 await addDoc(collection(db,"matches"),{
 team:team.value,
 map:map.value,
 comp:compSelected,
 score:score.value,
-date:convertedDate
+date:convertedDate,
+order: maxOrder + 1
 });
 
 
