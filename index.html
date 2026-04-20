@@ -467,8 +467,8 @@ transform:scale(1.02);
 }
 
 .dropdownBtn{
-width:18px;
-height:18px;
+width:20px;
+height:20px;
 display:inline-flex;
 align-items:center;
 justify-content:center;
@@ -480,6 +480,23 @@ font-size:11px;
 cursor:pointer;
 flex-shrink:0;
 margin-top:0;
+}
+
+.arrow{
+width:0;
+height:0;
+border-left:4px solid transparent;
+border-right:4px solid transparent;
+}
+
+.arrow.down{
+border-top:6px solid white;
+}
+
+.arrow.right{
+border-top:4px solid transparent;
+border-bottom:4px solid transparent;
+border-left:6px solid white;
 }
 
 .teamRow{
@@ -1087,7 +1104,7 @@ matchTable.innerHTML += `
 <div class="teamRow">
 <button class="dropdownBtn"
 onclick="event.stopPropagation(); toggleMatchGroup('${key}')">
-${collapsed ? "▸" : "▾"}
+<span class="arrow ${collapsed ? 'right' : 'down'}"></span>
 </button>
 <span>${team}</span>
 </div>
