@@ -1030,6 +1030,11 @@ groups[key].push(m);
 
 });
 
+/* sort maps inside each match */
+Object.values(groups).forEach(group=>{
+group.sort((a,b)=>(a.order || 0) - (b.order || 0));
+});
+
 /* render grouped matches */
 
 Object.values(groups).forEach(group=>{
