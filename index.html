@@ -1096,16 +1096,10 @@ Object.entries(dateGroups).forEach(([date,teams])=>{
 html += `
 <tr style="background:#191919;font-weight:bold;">
 <td></td>
-<td>${formatDate(date)}</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
+<td colspan="6">${formatDate(date)}</td>
 </tr>
 `;
 
-/* TEAMS INSIDE DATE */
 Object.entries(teams).forEach(([team,maps])=>{
 
 const key = `${date}-${team}`;
@@ -1113,11 +1107,10 @@ const collapsed = matchEditMode ? false : collapsedMatches[key];
 
 html += `
 <tr style="background:#1c1c1c;font-weight:600;">
-
 <td></td>
 <td></td>
 
-<td>
+<td colspan="5">
 <div class="teamRow">
 <button class="dropdownBtn"
 onclick="event.stopPropagation(); toggleMatchGroup('${key}')">
@@ -1126,11 +1119,6 @@ onclick="event.stopPropagation(); toggleMatchGroup('${key}')">
 <span>${team}</span>
 </div>
 </td>
-
-<td></td>
-<td></td>
-<td></td>
-<td></td>
 
 </tr>
 `;
@@ -1144,7 +1132,6 @@ maps
 html += `
 <tr data-id="${m.id}">
 <td class="matchDrag ${matchEditMode ? '' : 'hidden'}">☰</td>
-<td></td>
 <td></td>
 <td></td>
 
