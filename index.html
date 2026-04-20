@@ -1000,9 +1000,16 @@ const filter = document.getElementById("teamFilter").value || "all";
 matchTable.innerHTML = "";
 
 /* sort matches newest first */
-const sorted = [...matches].sort(
-(a,b)=> new Date(b.date) - new Date(a.date)
-);
+const sorted = [...matches].sort((a,b)=>{
+
+const dateCompare = b.date.localeCompare(a.date);
+
+if(dateCompare !== 0) return dateCompare;
+
+/* same date → alphabetical map order */
+return a.map.localeCompare(b.map);
+
+});
 
 /* apply team filter */
 const filtered = filter==="all"
