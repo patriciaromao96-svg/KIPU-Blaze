@@ -808,6 +808,7 @@ const totalMatches = document.getElementById("totalMatches");
 let editingMatchIndex = null;
 let editingPlayerIndex = null;
 let rosterEditMode = false;
+let collapsedMatches = {};
 
 /* pagination */
 let currentPage = 1;
@@ -994,6 +995,14 @@ filter.value = "all";
 
 }
 
+function toggleMatchGroup(key){
+
+collapsedMatches[key] = !collapsedMatches[key];
+
+renderMatches();
+
+}
+
 function renderMatches(){
 
 const filter = document.getElementById("teamFilter").value || "all";
@@ -1001,17 +1010,7 @@ const filter = document.getElementById("teamFilter").value || "all";
 matchTable.innerHTML = "";
 
 /* sort matches by date, team, map */
-const sorted = [...matches].sort((a,b)=>{
-
-const dateCompare = b.date.localeCompare(a.date);
-if(dateCompare !== 0) return dateCompare;
-
-const teamCompare = a.team.localeCompare(b.team);
-if(teamCompare !== 0) return teamCompare;
-
-return (a.order || 0) - (b.order || 0);
-
-});
+const sorted = [...matches];
 
 /* apply team filter */
 const filtered = filter==="all"
@@ -1037,14 +1036,21 @@ Object.values(groups).forEach(group=>{
 
 const first = group[0];
 
+const key = `${first.date}-${first.team}`;
+const collapsed = collapsedMatches[key];
+
 matchTable.innerHTML += `
-<tr style="background:#191919;font-weight:bold;">
-<td>${formatDate(first.date)}</td>
+<tr style="background:#191919;font-weight:bold; cursor:pointer;"
+onclick="toggleMatchGroup('${key}')">
+
+<td>${collapsed ? "▶" : "▼"} ${formatDate(first.date)}</td>
 <td>${first.team}</td>
 <td colspan="4"></td>
+
 </tr>
 `;
 
+if(!collapsed){
 group.forEach(m=>{
 
 matchTable.innerHTML += `
@@ -1079,10 +1085,12 @@ onclick="deleteMatch('${m.id}')">✖</button>
 `;
 
 });
+}
 
 });
 
 }
+
 
 function renderPlayers(){
 
