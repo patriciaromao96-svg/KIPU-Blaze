@@ -1310,10 +1310,10 @@ if(index === -1) return;
 
 const m = matches[index];
 
-team.value = m.team;
-map.value = m.map;
-score.value = m.score;
-date.value = formatDate(m.date);
+document.getElementById("team").value = m.team;
+document.getElementById("map").value = m.map;
+document.getElementById("score").value = m.score;
+document.getElementById("date").value = formatDate(m.date);
 
 const compSelect = document.getElementById("comp");
 const compTom = compSelect.tomselect;
