@@ -466,15 +466,19 @@ transform:scale(1.02);
 }
 
 .dropdownBtn{
-width:24px;
-height:24px;
+width:24px !important;
+height:24px !important;
 margin-right:6px;
 border-radius:6px;
 border:none;
-background:#ff7a00;
+background:#ff7a00 !important;
 color:white;
 font-weight:bold;
 cursor:pointer;
+padding:0 !important;
+display:inline-flex;
+align-items:center;
+justify-content:center;
 }
 
 .dropdownBtn:hover{
@@ -1060,11 +1064,11 @@ const key = `${first.date}-${first.team}`;
 const collapsed = collapsedMatches[key];
 
 matchTable.innerHTML += `
-<tr style="background:#191919;font-weight:bold; cursor:pointer;"
-onclick="toggleMatchGroup('${key}')">
+<tr style="background:#191919;font-weight:bold;">
 
 <td>
-<button class="dropdownBtn">
+<button class="dropdownBtn"
+onclick="event.stopPropagation(); toggleMatchGroup('${key}')">
 ${collapsed ? "▶" : "▼"}
 </button>
 ${formatDate(first.date)}
