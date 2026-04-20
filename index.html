@@ -1095,8 +1095,8 @@ Object.entries(dateGroups).forEach(([date,teams])=>{
 /* DATE ROW */
 matchTable.innerHTML += `
 <tr style="background:#191919;font-weight:bold;">
-<td></td>
-<td colspan="6">${formatDate(date)}</td>
+<td>${formatDate(date)}</td>
+<td colspan="5"></td>
 </tr>
 `;
 
@@ -1109,7 +1109,6 @@ const collapsed = collapsedMatches[key];
 matchTable.innerHTML += `
 <tr style="background:#1c1c1c;font-weight:600;">
 
-<td></td>
 <td></td>
 
 <td>
@@ -1136,30 +1135,27 @@ maps
 matchTable.innerHTML += `
 <tr data-id="${m.id}">
 <td class="matchDrag ${matchEditMode ? '' : 'hidden'}">☰</td>
+<td></td>
+<td></td>
 
-<td id="date-${m.id}">${formatDate(m.date)}</td>
+<td>${m.map}</td>
 
-<td id="team-${m.id}">${m.team}</td>
-
-<td id="map-${m.id}">${m.map}</td>
-
-<td id="comp-${m.id}">
+<td>
 ${m.comp ? m.comp.map(a =>
 `<img class="agentIcon" src="images/agents/${a.toLowerCase().replace("/", "").replace(" ", "")}.png">`
 ).join("") : ""}
 </td>
 
-<td id="score-${m.id}" style="color:${isWin(m.score) ? '#4caf50' : '#ff4d4d'}; font-weight:bold;">
+<td style="color:${isWin(m.score) ? '#4caf50' : '#ff4d4d'}; font-weight:bold;">
 ${m.score}
 </td>
 
 <td>
-<button
-id="matchEdit-${m.id}"
+<button type="button"
 class="editBtn ${matchEditMode ? '' : 'hidden'}"
 onclick="enableMatchEdit('${m.id}')">✏️</button>
 
-<button
+<button type="button"
 class="editBtn deleteBtn ${matchEditMode ? '' : 'hidden'}"
 onclick="deleteMatch('${m.id}')">✖</button>
 </td>
