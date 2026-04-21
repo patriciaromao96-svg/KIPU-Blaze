@@ -1158,7 +1158,7 @@ ${m.score}
 
 <td>
 <button type="button" class="editBtn hidden"
-onclick="enableMatchEdit('${m.id}')">✏️</button>
+onclick="editMatch('${m.id}')">✏️</button>
 
 <button type="button" class="editBtn deleteBtn hidden"
 onclick="deleteMatch('${m.id}')">✖</button>
@@ -1300,7 +1300,11 @@ renderEditMatches();
 
 }
 
-function editMatch(id){
+window.editMatch = function(id){
+
+openMatchForm();
+document.querySelector("#matchFormSection h3").textContent = "Edit Match";
+document.querySelector("#matchForm button[type='submit']").textContent = "Update Match";
 
 const index = matches.findIndex(m => m.id == id);
 
@@ -1308,10 +1312,10 @@ if(index === -1) return;
 
 const m = matches[index];
 
-team.value = m.team;
-map.value = m.map;
-score.value = m.score;
-date.value = formatDate(m.date);
+document.getElementById("team").value = m.team;
+document.getElementById("map").value = m.map;
+document.getElementById("score").value = m.score;
+document.getElementById("date").value = formatDate(m.date);
 
 const compSelect = document.getElementById("comp");
 const compTom = compSelect.tomselect;
@@ -1438,98 +1442,6 @@ cancelPlayerForm();
 
 }
 
-window.enableMatchEdit = function(id){
-
-const index = matches.findIndex(m => m.id == id);
-
-if(index === -1) return;
-
-const dateCell = document.getElementById(`date-${id}`);
-const teamCell = document.getElementById(`team-${id}`);
-const mapCell = document.getElementById(`map-${id}`);
-const scoreCell = document.getElementById(`score-${id}`);
-const compCell = document.getElementById(`comp-${id}`);
-
-dateCell.contentEditable = true;
-teamCell.contentEditable = true;
-mapCell.contentEditable = true;
-scoreCell.contentEditable = true;
-
-const currentComp = matches[index].comp || [];
-
-compCell.innerHTML = `<select id="compEdit-${id}" multiple></select>`;
-
-const select = document.getElementById(`compEdit-${id}`);
-
-AGENTS.forEach(agent=>{
-
-const option = document.createElement("option");
-option.value = agent;
-option.textContent = agent;
-
-if(currentComp.includes(agent)){
-option.selected = true;
-}
-
-
-select.appendChild(option);
-
-});
-
-/* turn edit button into save */
-
-const editBtn = document.getElementById(`matchEdit-${id}`);
-
-editBtn.innerHTML = "✔";
-editBtn.classList.add("saveBtn");
-editBtn.onclick = () => saveMatchRow(id);
-
-new TomSelect(select,{
-plugins:['remove_button'],
-maxItems:5
-});
-
-}
-
-async function saveMatchRow(id){
-
-const index = matches.findIndex(m => m.id == id);
-
-if(index === -1) return;
-
-const dateText = document.getElementById(`date-${id}`).innerText;
-const team = document.getElementById(`team-${id}`).innerText;
-const map = document.getElementById(`map-${id}`).innerText;
-const score = document.getElementById(`score-${id}`).innerText;
-
-const date = convertDate(dateText);
-
-const compSelect = document.getElementById(`compEdit-${id}`);
-
-const comp =
-Array.from(compSelect.selectedOptions).map(o=>o.value);
-
-await updateDoc(doc(db,"matches",id),{
-team:team,
-map:map,
-score:score,
-date:date,
-comp:comp
-});
-
-
-const editBtn = document.getElementById(`matchEdit-${id}`);
-
-editBtn.innerHTML = "✏️";
-editBtn.classList.remove("saveBtn");
-editBtn.onclick = () => enableMatchEdit(id);
-
-refreshUI();
-
-/* close form and hide buttons */
-cancelMatchForm();
-
-}
 
 window.enablePlayerEdit = function(index){
 
@@ -1789,6 +1701,8 @@ document.querySelectorAll("#matchTable .editBtn")
 
 /* reset form */
 document.getElementById("matchForm").reset();
+document.querySelector("#matchFormSection h3").textContent = "Add Match";
+document.querySelector("#matchForm button[type='submit']").textContent = "Add Match";
 
 const compSelect = document.getElementById("comp");
 if(compSelect.tomselect){
