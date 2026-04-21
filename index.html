@@ -133,6 +133,32 @@ table{
 width:100%;
 border-collapse:collapse;
 margin-top:10px;
+table-layout:fixed;
+}
+
+#matchTable td:nth-child(1),
+#matchTable th:nth-child(1){
+width:140px;
+}
+
+#matchTable td:nth-child(2),
+#matchTable th:nth-child(2){
+width:200px;
+}
+
+#matchTable td:nth-child(3),
+#matchTable th:nth-child(3){
+width:120px;
+}
+
+#matchTable td:nth-child(5),
+#matchTable th:nth-child(5){
+width:100px;
+}
+
+#matchTable td:nth-child(4){
+overflow:hidden;
+white-space:nowrap;
 }
 
 th{
@@ -538,6 +564,11 @@ font-weight:bold;
 user-select:none;
 }
 
+#rosterCard:not(.rosterEditing) th:first-child,
+#rosterCard:not(.rosterEditing) td:first-child{
+display:none;
+}
+
 </style>
 </head>
 
@@ -639,7 +670,7 @@ Roster
 </div>
 </h2>
 
-<table>
+<table id="rosterRosterTable">
 <thead>
 <tr>
 <th></th>
@@ -882,6 +913,7 @@ let editingPlayerIndex = null;
 let rosterEditMode = false;
 let collapsedMatches = {};
 let collapsedDates = {};
+let rosterSortable = null;
 
 /* pagination */
 let currentPage = 1;
@@ -1185,7 +1217,9 @@ players.forEach((p,i)=>{
 
 rosterTable.innerHTML+=`
 <tr data-id="${p.id}">
-<td class="dragHandle">☰</td>
+<td class="${rosterEditMode ? 'dragHandle' : ''}">
+${rosterEditMode ? '☰' : ''}
+</td>
 <td contenteditable="false" id="name-${i}">${p.name}</td>
 <td contenteditable="false" id="role-${i}">${p.role}</td>
 <td id="agents-${i}">
@@ -1198,7 +1232,7 @@ ${p.agent ? p.agent.map(a =>
 
 <button class="editBtn ${rosterEditMode ? "" : "hidden"}"
 id="playerEdit-${i}"
-onclick="enablePlayerEdit(${i})">✏️</button>
+onclick="editPlayer(${i})">✏️</button>
 
 <button class="editBtn deleteBtn ${rosterEditMode ? "" : "hidden"}"
 onclick="deletePlayer(${i})">✖</button>
@@ -1332,12 +1366,28 @@ editingMatchIndex = index;
 
 }
 
-function editPlayer(index){
+window.editPlayer = function(index){
+
+openPlayerForm();
+
+document.querySelector("#playerFormSection h3").textContent = "Edit Player";
+document.querySelector("#playerForm button[type='submit']").textContent = "Update Player";
 
 const p = players[index];
 
-playerName.value = p.name;
-role.value = p.role;
+document.getElementById("playerName").value = p.name;
+document.getElementById("role").value = p.role;
+
+const agentSelect = document.getElementById("agent");
+const agentTom = agentSelect.tomselect;
+
+agentTom.clear();
+
+if(p.agent){
+p.agent.forEach(a=>{
+agentTom.addItem(a);
+});
+}
 
 editingPlayerIndex = index;
 
@@ -1362,134 +1412,20 @@ cancelPlayerForm();
 
 }
 
-function enableEdit(index){
-
-const nameCell = document.getElementById(`name-${index}`);
-const roleCell = document.getElementById(`role-${index}`);
-const agentCell = document.getElementById(`agents-${index}`);
-
-nameCell.contentEditable = true;
-roleCell.contentEditable = true;
-
-const currentAgents = players[index].agent || [];
-
-agentCell.innerHTML = `
-<select id="agentEdit-${index}" multiple></select>
-`;
-
-const select = document.getElementById(`agentEdit-${index}`);
-
-AGENTS.forEach(agent=>{
-const option = document.createElement("option");
-option.value = agent;
-option.textContent = agent;
-
-if(currentAgents.includes(agent)){
-option.selected = true;
-}
-
-select.appendChild(option);
-});
-
-new TomSelect(select,{
-plugins:['remove_button'],
-maxItems:null
-});
-
-document.getElementById(`save-${index}`).classList.remove("hidden");
-
-const editBtn = document.querySelector(`#save-${index}`).nextElementSibling;
-editBtn.classList.add("hidden");
-
-const deleteBtn = editBtn.nextElementSibling;
-deleteBtn.classList.add("hidden");
-
-}
-
-window.savePlayerRow = async function(index){
-
-const name = document.getElementById(`name-${index}`).innerText;
-const role = document.getElementById(`role-${index}`).innerText;
-
-const agentSelect = document.getElementById(`agentEdit-${index}`);
-
-const agents =
-Array.from(agentSelect.selectedOptions).map(o=>o.value);
-
-const player = players[index];
-
-await updateDoc(doc(db,"players",player.id),{
-name:name,
-role:role,
-agent:agents
-});
-
-
-const editBtn = document.getElementById(`playerEdit-${index}`);
-
-editBtn.innerHTML = "✏️";
-editBtn.classList.remove("saveBtn");
-editBtn.onclick = () => enablePlayerEdit(index);
-
-refreshUI();
-
-/* keep buttons visible while editing */
-document.querySelectorAll("#rosterTable .editBtn")
-.forEach(btn => btn.classList.remove("hidden"));
-
-/* close form */
-cancelPlayerForm();
-
-}
-
-
-window.enablePlayerEdit = function(index){
-
-const nameCell = document.getElementById(`name-${index}`);
-const roleCell = document.getElementById(`role-${index}`);
-const agentCell = document.getElementById(`agents-${index}`);
-
-nameCell.contentEditable = true;
-roleCell.contentEditable = true;
-
-const currentAgents = players[index].agent || [];
-
-agentCell.innerHTML = `<select id="agentEdit-${index}" multiple></select>`;
-
-const select = document.getElementById(`agentEdit-${index}`);
-
-AGENTS.forEach(agent=>{
-
-const option = document.createElement("option");
-option.value = agent;
-option.textContent = agent;
-
-if(currentAgents.includes(agent)){
-option.selected = true;
-}
-
-select.appendChild(option);
-
-});
-
-new TomSelect(select,{
-plugins:['remove_button'],
-maxItems:null
-});
-
-const editBtn = document.getElementById(`playerEdit-${index}`);
-
-editBtn.innerHTML = "✔";
-editBtn.classList.add("saveBtn");
-editBtn.onclick = () => savePlayerRow(index);
-
-}
-
 window.openPlayerForm = function(){
 
 rosterEditMode = true;
 
+document.getElementById("rosterCard").classList.add("rosterEditing");
+
 document.getElementById("playerFormSection").classList.remove("hidden");
+
+/* show edit/delete buttons */
+document.querySelectorAll("#rosterTable .editBtn")
+.forEach(btn=>btn.classList.remove("hidden"));
+
+/* enable drag only in edit mode */
+enableRosterDrag();
 
 renderPlayers();
 
@@ -1497,7 +1433,9 @@ renderPlayers();
 
 window.cancelPlayerForm = function(){
 
-  rosterEditMode = false;
+rosterEditMode = false;
+
+document.getElementById("rosterCard").classList.remove("rosterEditing");
 
 document.getElementById("playerFormSection").classList.add("hidden");
 document.getElementById("playerEditSection").classList.add("hidden");
@@ -1505,6 +1443,8 @@ document.getElementById("playerEditSection").classList.add("hidden");
 editingPlayerIndex = null;
 
 document.getElementById("playerForm").reset();
+document.querySelector("#playerFormSection h3").textContent = "Add Player";
+document.querySelector("#playerForm button[type='submit']").textContent = "Add Player";
 
 const agentSelect = document.getElementById("agent");
 
@@ -1672,7 +1612,7 @@ populateAgentSelectors();
 
 listenMatches();
 listenPlayers();
-enableRosterDrag();
+/* drag disabled by default */
 
 document.getElementById("addMatchBtn").addEventListener("click", openMatchForm);
 document.getElementById("addPlayerBtn").addEventListener("click", openPlayerForm);
@@ -1796,7 +1736,9 @@ container.appendChild(next);
 
 function enableRosterDrag(){
 
-new Sortable(rosterTable,{
+if(rosterSortable) return;
+
+rosterSortable = new Sortable(rosterTable,{
 animation:150,
 handle: ".dragHandle",
 filter: ".editBtn",
