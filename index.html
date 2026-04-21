@@ -466,44 +466,60 @@ transition:0.2s;
 transform:scale(1.02);
 }
 
-.dropdownBtn{
-width:20px;
-height:20px;
-display:inline-flex;
-align-items:center;
-justify-content:center;
-border:none;
-border-radius:4px;
-background:#ff7a00;
-color:white;
-font-size:11px;
-cursor:pointer;
-flex-shrink:0;
-margin-top:0;
-}
-
-.arrow{
-width:0;
-height:0;
-border-left:4px solid transparent;
-border-right:4px solid transparent;
-}
-
-.arrow.down{
-border-top:6px solid white;
-}
-
-.arrow.right{
-border-top:4px solid transparent;
-border-bottom:4px solid transparent;
-border-left:6px solid white;
-}
-
 .teamRow{
 display:flex;
 align-items:center;
 gap:10px;
 line-height:1;
+font-weight:600;
+}
+
+.dateRow td:first-child{
+font-weight:bold;
+color:#ff7a00;
+}
+
+.dateRow td{
+font-weight:600;
+color:#cfd3dc;
+padding-top:14px;
+padding-bottom:6px;
+border-top:1px solid rgba(255,255,255,0.05);
+}
+
+/* stronger separation between date groups */
+.dateRow td{
+  border-top:1px solid #2f2f2f;
+  padding-top:16px;
+  padding-bottom:6px;
+}
+
+/* faint divider after each date group (applies to first match row) */
+.matchRow{
+  border-top:1px solid rgba(255,255,255,0.04);
+}
+
+/* slightly dim non-team cells so the team stands out */
+.matchRow td{
+  color:#cfcfcf;
+}
+
+.dateCell{
+width:140px;
+}
+
+.matchRow td{
+color:#d0d0d0;
+}
+
+.matchRow td:first-child{
+width:140px;
+}
+
+.teamName{
+font-weight:700;
+color:#ffffff;
+letter-spacing:0.3px;
 }
 
 #matchTable td{
@@ -514,13 +530,12 @@ vertical-align:middle;
 background:#ff8c1a;
 }
 
-.matchDrag{
-cursor:grab;
-font-size:18px;
-opacity:0.6;
+.dateToggle{
+cursor:pointer;
+margin-right:8px;
+color:#ff7a00;
+font-weight:bold;
 user-select:none;
-text-align:center;
-width:20px;
 }
 
 </style>
@@ -597,7 +612,6 @@ Match History
 
 <thead>
 <tr>
-<th></th>
 <th>Date</th>
 <th>Team</th>
 <th>Map</th>
@@ -866,8 +880,8 @@ const totalMatches = document.getElementById("totalMatches");
 let editingMatchIndex = null;
 let editingPlayerIndex = null;
 let rosterEditMode = false;
-let matchEditMode = false;
 let collapsedMatches = {};
+let collapsedDates = {};
 
 /* pagination */
 let currentPage = 1;
@@ -882,7 +896,13 @@ renderMapStats();
 
 }
 
+window.toggleDate = function(date){
 
+collapsedDates[date] = !collapsedDates[date];
+
+renderMatches();
+
+}
 
 function formatDate(date){
 
@@ -1054,22 +1074,15 @@ filter.value = "all";
 
 }
 
-window.toggleMatchGroup = function(key){
-
-collapsedMatches[key] = !collapsedMatches[key];
-
-renderMatches();
-
-}
 
 function renderMatches(){
 
 const filter = document.getElementById("teamFilter").value || "all";
 
-let html = "";
+matchTable.innerHTML = "";
 
 /* sort matches by date, team, map */
-const sorted = matches;
+const sorted = [...matches];
 
 /* apply team filter */
 const filtered = filter==="all"
@@ -1093,57 +1106,43 @@ dateGroups[m.date][m.team].push(m);
 Object.entries(dateGroups).forEach(([date,teams])=>{
 
 /* DATE ROW */
-html += `
-<tr style="background:#191919;font-weight:bold;">
-<td></td>
-<td>${formatDate(date)}</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-`;
-
-Object.entries(teams).forEach(([team,maps])=>{
-
-const key = `${date}-${team}`;
-const collapsed = matchEditMode ? false : collapsedMatches[key];
-
-html += `
-<tr style="background:#1c1c1c;font-weight:600;">
-<td></td>
-<td></td>
+matchTable.innerHTML += `
+<tr class="dateRow">
 
 <td>
-<div class="teamRow">
-<button class="dropdownBtn"
-onclick="event.stopPropagation(); toggleMatchGroup('${key}')">
-<span class="arrow ${collapsed ? 'right' : 'down'}"></span>
-</button>
-<span>${team}</span>
-</div>
+<span class="dateToggle" onclick="toggleDate('${date}')">
+${collapsedDates[date] ? "▶" : "▼"}
+</span>
+${formatDate(date)}
 </td>
 
 <td></td>
 <td></td>
 <td></td>
 <td></td>
+<td></td>
 
 </tr>
 `;
 
-if(!collapsed){
+/* TEAMS INSIDE DATE */
+Object.entries(teams).forEach(([team,maps])=>{
+
+const key = `${date}-${team}`;
+const collapsed = collapsedMatches[key];
+
+if(!collapsedDates[date]){
 
 maps
 .sort((a,b)=>(a.order || 0)-(b.order || 0))
-.forEach(m=>{
+.forEach((m,index)=>{
 
-html += `
-<tr data-id="${m.id}">
-<td class="matchDrag ${matchEditMode ? '' : 'hidden'}">☰</td>
+matchTable.innerHTML += `
+<tr class="matchRow">
+
 <td></td>
-<td></td>
+
+<td>${index === 0 ? `<span class="teamName">${team}</span>` : ""}</td>
 
 <td>${m.map}</td>
 
@@ -1158,14 +1157,13 @@ ${m.score}
 </td>
 
 <td>
-<button type="button"
-class="editBtn ${matchEditMode ? '' : 'hidden'}"
-onclick="editMatch('${m.id}')">✏️</button>
+<button type="button" class="editBtn hidden"
+onclick="enableMatchEdit('${m.id}')">✏️</button>
 
-<button type="button"
-class="editBtn deleteBtn ${matchEditMode ? '' : 'hidden'}"
+<button type="button" class="editBtn deleteBtn hidden"
 onclick="deleteMatch('${m.id}')">✖</button>
 </td>
+
 </tr>
 `;
 
@@ -1176,8 +1174,6 @@ onclick="deleteMatch('${m.id}')">✖</button>
 });
 
 });
-
-matchTable.innerHTML = html;
 
 }
 
@@ -1304,14 +1300,7 @@ renderEditMatches();
 
 }
 
-window.editMatch = function(id){
-
-openMatchForm(true);
-document.getElementById("matchFormSection")
-.scrollIntoView({behavior:"smooth",block:"start"});
-
-document.querySelector("#matchFormSection h3").textContent = "Edit Match";
-document.querySelector("#matchForm button[type='submit']").textContent = "Update Match";
+function editMatch(id){
 
 const index = matches.findIndex(m => m.id == id);
 
@@ -1319,10 +1308,10 @@ if(index === -1) return;
 
 const m = matches[index];
 
-document.getElementById("team").value = m.team;
-document.getElementById("map").value = m.map;
-document.getElementById("score").value = m.score;
-document.getElementById("date").value = formatDate(m.date);
+team.value = m.team;
+map.value = m.map;
+score.value = m.score;
+date.value = formatDate(m.date);
 
 const compSelect = document.getElementById("comp");
 const compTom = compSelect.tomselect;
@@ -1633,13 +1622,15 @@ document.getElementById("playerEditSection").classList.add("hidden");
 
 window.openMatchForm = function(){
 
-matchEditMode = true;
-
 document.getElementById("matchFormSection").classList.remove("hidden");
+
+/* disable add button */
 document.getElementById("addMatchBtn").disabled = true;
 
-/* refresh table so buttons appear */
-renderMatches();
+/* show edit/delete buttons */
+document.querySelectorAll("#matchTable .editBtn").forEach(btn=>{
+btn.classList.remove("hidden");
+});
 
 }
 
@@ -1770,45 +1761,6 @@ populateAgentSelectors();
 listenMatches();
 listenPlayers();
 enableRosterDrag();
-enableMatchDrag();
-
-function enableMatchDrag(){
-
-new Sortable(matchTable,{
-animation:150,
-handle: ".matchDrag",
-draggable: "tr[data-id]",
-
-onEnd: async function(){
-
-const rows = [...matchTable.querySelectorAll("tr[data-id]")];
-
-for(const [index,row] of rows.entries()){
-
-const id = row.dataset.id;
-
-await updateDoc(doc(db,"matches",id),{
-order:index + 1
-});
-
-}
-
-/* KEEP EDIT MODE ACTIVE */
-matchEditMode = true;
-
-/* SHOW EDIT BUTTONS AGAIN */
-document.querySelectorAll("#matchTable .editBtn")
-.forEach(btn => btn.classList.remove("hidden"));
-
-/* SHOW DRAG HANDLES AGAIN */
-document.querySelectorAll("#matchTable .matchDrag")
-.forEach(el => el.classList.remove("hidden"));
-
-}
-
-});
-
-}
 
 document.getElementById("addMatchBtn").addEventListener("click", openMatchForm);
 document.getElementById("addPlayerBtn").addEventListener("click", openPlayerForm);
@@ -1826,9 +1778,6 @@ maxItems:5
 
 window.cancelMatchForm = function(){
 
-matchEditMode = false;
-editingMatchIndex = null;
-
 document.getElementById("addMatchBtn").disabled = false;
 
 /* hide form */
@@ -1838,14 +1787,8 @@ document.getElementById("matchFormSection").classList.add("hidden");
 document.querySelectorAll("#matchTable .editBtn")
 .forEach(btn=>btn.classList.add("hidden"));
 
-/* HIDE DRAG HANDLES */
-document.querySelectorAll("#matchTable .matchDrag")
-.forEach(el=>el.classList.add("hidden"));
-
 /* reset form */
 document.getElementById("matchForm").reset();
-document.querySelector("#matchFormSection h3").textContent = "Add Match";
-document.querySelector("#matchForm button[type='submit']").textContent = "Add Match";
 
 const compSelect = document.getElementById("comp");
 if(compSelect.tomselect){
